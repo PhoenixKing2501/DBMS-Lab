@@ -19,6 +19,10 @@ def get_db_conn():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    return render_template('index.html')
+
+@app.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
     if not session.get('logged_in'):
         return redirect('/login')
     
@@ -38,7 +42,7 @@ def index():
     cursor.close()
     connection.close()
 
-    return render_template('index.html', 
+    return render_template('dashboard.html', 
                            patient_table=[df_patient.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')],
                            appointment_table=[df_appointment.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
 
@@ -59,9 +63,14 @@ def login():
             record = True
         if record:
             session['logged_in'] = True
-        return redirect('/')
+        return redirect('/dashboard')
         
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session['logged_in'] = False
+    return redirect('/')
 
 def main():
     app.run(debug=True)
