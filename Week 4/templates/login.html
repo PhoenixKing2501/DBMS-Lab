@@ -24,6 +24,15 @@
         <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal">LOGIN</h1>
         <p>Please provide your username and password</p>
+        <p style="color:red;">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+          {% endif %}
+        {% endwith %}
+        </p>
       </div>
 
       <div class="form-label-group">

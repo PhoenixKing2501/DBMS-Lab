@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import psycopg2
 import secrets
 import pandas as pd
@@ -21,8 +21,8 @@ def get_db_conn():
 def index():
     return render_template('index.html')
 
-@app.route('/dashboard', methods=['GET', 'POST'])
-def dashboard():
+@app.route('/dashboard_doc', methods=['GET', 'POST'])
+def dashboard_doc():
     if not session.get('logged_in'):
         return redirect('/login')
     
@@ -42,10 +42,15 @@ def dashboard():
     cursor.close()
     connection.close()
 
-    return render_template('dashboard.html', 
+    return render_template('dashboard_doc.html', 
                            patient_table=[df_patient.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')],
                            appointment_table=[df_appointment.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
 
+@app.route('/patients_doc', methods=['GET', 'POST'])
+def patients_doc():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('patients_doc.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -63,7 +68,9 @@ def login():
             record = True
         if record:
             session['logged_in'] = True
-        return redirect('/dashboard')
+        else:
+            flash('Invalid credentials', category='error')
+        return redirect('/dashboard_doc')
         
     return render_template('login.html')
 
