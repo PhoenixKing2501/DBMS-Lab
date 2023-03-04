@@ -17,9 +17,14 @@ def get_db_conn():
                                 )
     return connection
 
+
+# home page
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
+
+# doctor pages
 
 @app.route('/dashboard_doc', methods=['GET', 'POST'])
 def dashboard_doc():
@@ -52,12 +57,57 @@ def patients_doc():
         return redirect('/login')
     return render_template('patients_doc.html')
 
+# admin pages
+
 @app.route('/dashboard_admin', methods=['GET', 'POST'])
 def dashboard_admin():
     if not session.get('logged_in'):
         return redirect('/login')
     return render_template('dashboard_admin.html')
 
+
+@app.route('/create_user', methods=['GET', 'POST'])
+def create_user():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('create_user.html')
+
+@app.route('/delete_user', methods=['GET', 'POST'])
+def delete_user():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('delete_user.html')
+
+# Front desk operator pages
+
+@app.route('/dashboard_fdo', methods=['GET', 'POST'])
+def dashboard_fdo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('dashboard_fdo.html')
+
+
+# Data entry operator pages
+
+@app.route('/dashboard_deo', methods=['GET', 'POST'])
+def dashboard_deo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('dashboard_deo.html')
+
+@app.route('/entry_deo', methods=['GET', 'POST'])
+def entry_deo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('entry_deo.html')
+
+@app.route('/delete_deo', methods=['GET', 'POST'])
+def delete_deo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('delete_deo.html')
+
+# login and logout
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -89,6 +139,9 @@ def login():
 def logout():
     session['logged_in'] = False
     return redirect('/')
+
+
+# main function
 
 def main():
     app.run(debug=True)
