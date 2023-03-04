@@ -12,10 +12,10 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/checkout/">
 
     <!-- Bootstrap core CSS -->
-    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="form-validation.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/4.0/examples/checkout/form-validation.css" rel="stylesheet">
   </head>
 
   <body class="bg-light">
@@ -23,12 +23,12 @@
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>Checkout form</h2>
+        <h2>Create User</h2>
         <p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
       </div>
 
       <div class="row">
-        <div class="col-md-4 order-md-2 mb-4">
+        <!-- <div class="col-md-4 order-md-2 mb-4">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted">Your cart</span>
             <span class="badge badge-secondary badge-pill">3</span>
@@ -76,21 +76,21 @@
               </div>
             </div>
           </form>
-        </div>
+        </div> -->
         <div class="col-md-8 order-md-1">
-          <h4 class="mb-3">Billing address</h4>
+          <h4 class="mb-3">User details</h4>
           <form class="needs-validation" novalidate>
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="firstName">First name</label>
-                <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+                <label for="Name">Name</label>
+                <input type="text" class="form-control" id="Name" placeholder="" value="" required>
                 <div class="invalid-feedback">
-                  Valid first name is required.
+                  Valid name is required.
                 </div>
               </div>
               <div class="col-md-6 mb-3">
-                <label for="lastName">Last name</label>
-                <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+                <label for="EmployeeID">EmployeeID</label>
+                <input type="text" class="form-control" id="EmployeeID" placeholder="" value="" required>
                 <div class="invalid-feedback">
                   Valid last name is required.
                 </div>
@@ -119,7 +119,7 @@
             </div>
 
             <div class="mb-3">
-              <label for="address">Address</label>
+              <label for="address">Current Address</label>
               <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
               <div class="invalid-feedback">
                 Please enter your shipping address.
@@ -127,7 +127,7 @@
             </div>
 
             <div class="mb-3">
-              <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
+              <label for="address2">Permanent Residential Address <span class="text-muted">(Optional)</span></label>
               <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
             </div>
 
@@ -136,7 +136,7 @@
                 <label for="country">Country</label>
                 <select class="custom-select d-block w-100" id="country" required>
                   <option value="">Choose...</option>
-                  <option>United States</option>
+                  <option>India</option>
                 </select>
                 <div class="invalid-feedback">
                   Please select a valid country.
@@ -146,17 +146,17 @@
                 <label for="state">State</label>
                 <select class="custom-select d-block w-100" id="state" required>
                   <option value="">Choose...</option>
-                  <option>California</option>
+                  <option>West Bengal</option>
                 </select>
                 <div class="invalid-feedback">
                   Please provide a valid state.
                 </div>
               </div>
               <div class="col-md-3 mb-3">
-                <label for="zip">Zip</label>
+                <label for="zip">Pin</label>
                 <input type="text" class="form-control" id="zip" placeholder="" required>
                 <div class="invalid-feedback">
-                  Zip code required.
+                  Pin code required.
                 </div>
               </div>
             </div>
@@ -221,13 +221,13 @@
               </div>
             </div>
             <hr class="mb-4">
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Create User</button>
           </form>
         </div>
       </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2017-2018 Company Name</p>
+        <p class="mb-1">&copy; DBMS Spr'22-23</p>
         <ul class="list-inline">
           <li class="list-inline-item"><a href="#">Privacy</a></li>
           <li class="list-inline-item"><a href="#">Terms</a></li>
@@ -241,9 +241,9 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-    <script src="../../assets/js/vendor/popper.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/vendor/holder.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/popper.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/holder.min.js"></script>
     <script>
       // Example starter JavaScript for disabling form submissions if there are invalid fields
       (function() {

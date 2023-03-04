@@ -51,6 +51,14 @@ def patients_doc():
     if not session.get('logged_in'):
         return redirect('/login')
     return render_template('patients_doc.html')
+
+@app.route('/dashboard_admin', methods=['GET', 'POST'])
+def dashboard_admin():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('dashboard_admin.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -64,13 +72,16 @@ def login():
         # cursor.close()
         # connection.close()
         record = False
-        if(username == "admin"):
+        if(username == "doctor" or username == "admin"):
             record = True
         if record:
             session['logged_in'] = True
         else:
             flash('Invalid credentials', category='error')
-        return redirect('/dashboard_doc')
+        if(username == "doctor"):
+            return redirect('/dashboard_doc')
+        elif(username == "admin"):
+            return redirect('/dashboard_admin')
         
     return render_template('login.html')
 
