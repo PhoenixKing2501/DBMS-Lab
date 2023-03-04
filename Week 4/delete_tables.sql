@@ -1,0 +1,12 @@
+DROP TABLE users;
+DROP TABLE undergoes;
+DROP TABLE prescribes;
+DROP TABLE appointment;
+DROP TABLE affiliated_with;
+DROP TABLE stay;
+DROP TABLE patient;
+DROP TABLE department;
+DROP TABLE room;
+DROP TABLE medication;
+DROP TABLE "procedure";
+DROP TABLE physician;

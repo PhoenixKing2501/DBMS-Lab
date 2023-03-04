@@ -2,20 +2,32 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import psycopg2
 import secrets
 import pandas as pd
+import bcrypt
 
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(32)  # generate a random key for session
 
 
+# utility functions
+
 def get_db_conn():
     connection = psycopg2.connect(user="postgres",
                                 password="432511",
                                 host="localhost",
                                 port="5432",
-                                database="20CS30064",
+                                database="app_db",
                                 )
     return connection
+
+def get_hashed_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def check_password(password, hashed_password):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+
+
 
 
 # home page
@@ -23,6 +35,10 @@ def get_db_conn():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
+
+
+
+
 
 # doctor pages
 
@@ -34,12 +50,23 @@ def dashboard_doc():
     connection=get_db_conn()
     cursor=connection.cursor()
 
-    cursor.execute("SELECT * FROM patient")
+    cursor.execute('''
+    SELECT SSN AS "SSN", Name AS "Name", Phone AS "Phone"
+    FROM patient
+    WHERE PCP = %s;
+    ''', (session['username'],))
+
     columns = [desc[0] for desc in cursor.description]
     records=cursor.fetchall()
     df_patient = pd.DataFrame(records, columns=columns)
 
-    cursor.execute("SELECT * FROM appointment")
+    cursor.execute('''
+    SELECT AppointmentID AS "Appointment ID", Patient AS "Patient", "Start", "End", ExaminationRoom AS "Examination Room"
+    FROM appointment
+    WHERE Physician = %s
+        AND "Start" > CURRENT_TIMESTAMP;
+    ''', (session['username'],))
+
     columns = [desc[0] for desc in cursor.description]
     records=cursor.fetchall()
     df_appointment = pd.DataFrame(records, columns=columns)
@@ -50,12 +77,19 @@ def dashboard_doc():
     return render_template('dashboard_doc.html', 
                            patient_table=[df_patient.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')],
                            appointment_table=[df_appointment.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
+# END dashboard_doc
 
 @app.route('/patients_doc', methods=['GET', 'POST'])
 def patients_doc():
     if not session.get('logged_in'):
         return redirect('/login')
     return render_template('patients_doc.html')
+# END patients_doc
+
+
+
+
+
 
 # admin pages
 
@@ -78,6 +112,12 @@ def delete_user():
         return redirect('/login')
     return render_template('delete_user.html')
 
+
+
+
+
+
+
 # Front desk operator pages
 
 @app.route('/dashboard_fdo', methods=['GET', 'POST'])
@@ -85,6 +125,11 @@ def dashboard_fdo():
     if not session.get('logged_in'):
         return redirect('/login')
     return render_template('dashboard_fdo.html')
+
+
+
+
+
 
 
 # Data entry operator pages
@@ -107,31 +152,43 @@ def delete_deo():
         return redirect('/login')
     return render_template('delete_deo.html')
 
+
+
+
+
+
 # login and logout
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
+        password = get_hashed_password(request.form['password'])
 
-        # connection = get_db_conn()
-        # cursor = connection.cursor()
+        connection = get_db_conn()
+        cursor = connection.cursor()
         # cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
-        # record = cursor.fetchone()
-        # cursor.close()
-        # connection.close()
-        record = False
-        if(username == "doctor" or username == "admin"):
-            record = True
-        if record:
-            session['logged_in'] = True
-        else:
+        cursor.execute("SELECT EmployeeType FROM users WHERE EmployeeID = %s", (username,))
+        
+        record = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if (record == None):
             flash('Invalid credentials', category='error')
-        if(username == "doctor"):
+            return redirect('/login')
+
+        session['logged_in'] = True
+        session['username'] = username
+
+        if(record[0] == "doctor"):
             return redirect('/dashboard_doc')
-        elif(username == "admin"):
+        elif(record[0] == "admin"):
             return redirect('/dashboard_admin')
+        elif(record[0] == "frontop"):
+            return redirect('/dashboard_fdo')
+        elif(record[0] == "entryop"):
+            return redirect('/dashboard_deo')
         
     return render_template('login.html')
 

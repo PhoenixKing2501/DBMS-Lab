@@ -3,8 +3,7 @@
 CREATE TABLE IF NOT EXISTS physician (
     EmployeeID      TEXT        PRIMARY KEY,
     Name            TEXT        NOT NULL,
-    Position        TEXT        NOT NULL,
-    SSN             INT         UNIQUE NOT NULL
+    Position        TEXT        NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "procedure" (
@@ -21,17 +20,17 @@ CREATE TABLE IF NOT EXISTS medication (
 );
 
 CREATE TABLE IF NOT EXISTS room (
-    Number          TEXT        PRIMARY KEY,
+    Number          INT         PRIMARY KEY,
     Type            TEXT        NOT NULL,
     Floor           INT         NOT NULL,
     Block           TEXT        NOT NULL,
-    Available       BOOLEAN     NOT NULL,
+    Available       BOOLEAN     NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS department (
     DepartmentID    TEXT        PRIMARY KEY,
     Name            TEXT        NOT NULL,
-    Head            INT         NOT NULL,
+    Head            TEXT        NOT NULL,
     FOREIGN KEY (Head) REFERENCES physician (EmployeeID)
 );
 
@@ -40,15 +39,15 @@ CREATE TABLE IF NOT EXISTS patient (
     Name            TEXT        NOT NULL,
     Address         TEXT        NOT NULL,
     Phone           TEXT        NOT NULL,
-    InsuranceID     INT         NOT NULL,
+    InsuranceID     TEXT        NOT NULL,
     PCP             TEXT        NOT NULL,
     FOREIGN KEY (PCP) REFERENCES physician (EmployeeID)
 );
 
 CREATE TABLE IF NOT EXISTS stay (
     StayID          TEXT        PRIMARY KEY,
-    Patient         TEXT        NOT NULL,
-    Room            TEXT        NOT NULL,
+    Patient         INT         NOT NULL,
+    Room            INT         NOT NULL,
     "Start"         TIMESTAMP   NOT NULL,
     "End"           TIMESTAMP   NOT NULL,
     FOREIGN KEY (Patient) REFERENCES patient (SSN),
@@ -65,7 +64,7 @@ CREATE TABLE IF NOT EXISTS affiliated_with (
 
 CREATE TABLE IF NOT EXISTS appointment (
     AppointmentID   TEXT        PRIMARY KEY,
-    Patient         TEXT        NOT NULL,
+    Patient         INT         NOT NULL,
     Physician       TEXT        NOT NULL,
     "Start"         TIMESTAMP   NOT NULL,
     "End"           TIMESTAMP   NOT NULL,
@@ -76,7 +75,7 @@ CREATE TABLE IF NOT EXISTS appointment (
 
 CREATE TABLE IF NOT EXISTS prescribes (
     Physician       TEXT,
-    Patient         TEXT,
+    Patient         INT,
     Medication      TEXT,
     "Date"          TIMESTAMP,
     Appointment     TEXT,
@@ -89,7 +88,7 @@ CREATE TABLE IF NOT EXISTS prescribes (
 );
 
 CREATE TABLE IF NOT EXISTS undergoes (
-    Patient         TEXT,
+    Patient         INT,
     "Procedure"     TEXT,
     Stay            TEXT,
     "Date"     TIMESTAMP,
@@ -98,13 +97,17 @@ CREATE TABLE IF NOT EXISTS undergoes (
     FOREIGN KEY (Patient) REFERENCES patient (SSN),
     FOREIGN KEY ("Procedure") REFERENCES "procedure" (Code),
     FOREIGN KEY (Stay) REFERENCES stay (StayID),
-    FOREIGN KEY (Physician) REFERENCES physician (EmployeeID),
+    FOREIGN KEY (Physician) REFERENCES physician (EmployeeID)
 );
 
 
 CREATE TABLE IF NOT EXISTS users (
-    Username        TEXT        PRIMARY KEY,
-    Password        TEXT        NOT NULL,
-    EmployeeID      TEXT        NOT NULL,
-    EmployeeType    TEXT        NOT NULL
+    EmployeeID      TEXT        PRIMARY KEY,
+    Name            TEXT        NOT NULL,
+    EmployeeType    TEXT        NOT NULL,
+    SSN             INT         UNIQUE NOT NULL
+    -- Address         JSON        NOT NULL,
+    -- Phone           TEXT        NOT NULL,
+    -- Email           TEXT
+    -- Password        TEXT        NOT NULL
 );
