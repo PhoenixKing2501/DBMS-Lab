@@ -23,9 +23,8 @@ def get_db_conn():
 def get_hashed_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-def check_password(password, hashed_password):
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
-
+def check_password_hash(password, hash):
+    return bcrypt.checkpw(password.encode('utf-8'), hash.encode('utf-8'))
 
 
 
@@ -97,14 +96,96 @@ def patients_doc():
 def dashboard_admin():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('dashboard_admin.html')
+    
+    connection=get_db_conn()
+    cursor=connection.cursor()
+
+    cursor.execute('''
+    SELECT EmployeeID AS "Employee ID", Name AS "Name", EmployeeType AS "User Type", SSN AS "SSN"
+    FROM users;
+    ''')
+
+    columns = [desc[0] for desc in cursor.description]
+    records=cursor.fetchall()
+    df_users = pd.DataFrame(records, columns=columns)
+
+    cursor.close()
+    connection.close()
+
+    return render_template('dashboard_admin.html',
+                           user_table=[df_users.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
 
 
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
     if not session.get('logged_in'):
         return redirect('/login')
+    
+    if request.method == 'POST':
+        # get form data
+        name = request.form['name']
+        employeeID = request.form['employeeID']
+        employeeType = request.form['user']
+        ssn = request.form['ssn']
+        position = None
+        departmentID = None
+        if employeeType == 'doctor':
+            position = request.form['position']
+            departmentID = request.form['departmentID']
+        email = request.form['email']
+        address = request.form['address']
+        country = request.form['country']
+        state = request.form['state']
+        pin = request.form['pin']
+
+        password = get_hashed_password(employeeID)
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        address = address + ', ' + state + ', ' + country + ', ' + pin
+
+        if email == '':
+            email = None
+        
+        # insert into users
+        cursor.execute('''
+        INSERT INTO users
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        ''', 
+        (employeeID, name, employeeType, ssn, address, email, password)
+        )
+
+        if employeeType == 'doctor':
+
+            # insert into doctor
+
+            cursor.execute('''
+            INSERT INTO doctor
+            VALUES (%s, %s, %s)
+            ''', 
+            (employeeID, name, position)
+            )
+
+            # insert into affiliated_with
+
+            cursor.execute('''
+            INSERT INTO affiliated_with
+            VALUES (%s, %s)
+            ''',
+            (employeeID, departmentID)
+            )
+
+        # save changes
+        connection.commit()
+
+        # close connection
+        cursor.close()
+        connection.close()
+    # END if
+
     return render_template('create_user.html')
+# END create_user
 
 @app.route('/delete_user', methods=['GET', 'POST'])
 def delete_user():
@@ -138,7 +219,40 @@ def dashboard_fdo():
 def dashboard_deo():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('dashboard_deo.html')
+    
+    connection=get_db_conn()
+    cursor=connection.cursor()
+
+    # upcoming appointments
+    cursor.execute('''
+    SELECT 
+        AppointmentID AS "Appointment ID", 
+        pat.Name AS "Patient, 
+        pat.SSN AS "Patient SSN", 
+        doc.Name AS "Physician",
+        doc.EmployeeID AS "Physician ID",
+        "Start", 
+        "End", 
+        ExaminationRoom AS "Examination Room"
+    FROM 
+        appointment AS apt, patient AS pat, physician AS doc
+    WHERE appointment.Patient = patient.SSN
+        AND appointment.Physician = physician.EmployeeID
+        AND "Start" > CURRENT_TIMESTAMP;
+    GROUP BY "Start"
+    ORDER BY "Start";
+    ''')
+
+    columns = [desc[0] for desc in cursor.description]
+    records=cursor.fetchall()
+    df_apt = pd.DataFrame(records, columns=columns)
+
+    cursor.close()
+    connection.close()
+
+    return render_template('dashboard_deo.html',
+                           apt_table=[df_apt.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
+# END dashboard_deo
 
 @app.route('/entry_deo', methods=['GET', 'POST'])
 def entry_deo():
@@ -163,18 +277,21 @@ def delete_deo():
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        password = get_hashed_password(request.form['password'])
+        password = request.form['password']
 
         connection = get_db_conn()
         cursor = connection.cursor()
         # cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
-        cursor.execute("SELECT EmployeeType FROM users WHERE EmployeeID = %s", (username,))
-        
+        cursor.execute("SELECT EmployeeType, password FROM users WHERE EmployeeID = %s", (username,))
         record = cursor.fetchone()
         cursor.close()
         connection.close()
 
         if (record == None):
+            flash('Invalid credentials', category='error')
+            return redirect('/login')
+
+        if (not check_password_hash(password, record[1][2:-1])):
             flash('Invalid credentials', category='error')
             return redirect('/login')
 
@@ -185,12 +302,13 @@ def login():
             return redirect('/dashboard_doc')
         elif(record[0] == "admin"):
             return redirect('/dashboard_admin')
-        elif(record[0] == "frontop"):
+        elif(record[0] == "front desk operator"):
             return redirect('/dashboard_fdo')
-        elif(record[0] == "entryop"):
+        elif(record[0] == "data entry operator"):
             return redirect('/dashboard_deo')
         
     return render_template('login.html')
+# END login
 
 @app.route('/logout')
 def logout():

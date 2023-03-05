@@ -105,9 +105,8 @@ CREATE TABLE IF NOT EXISTS users (
     EmployeeID      TEXT        PRIMARY KEY,
     Name            TEXT        NOT NULL,
     EmployeeType    TEXT        NOT NULL,
-    SSN             INT         UNIQUE NOT NULL
-    -- Address         JSON        NOT NULL,
-    -- Phone           TEXT        NOT NULL,
-    -- Email           TEXT
-    -- Password        TEXT        NOT NULL
+    SSN             INT         UNIQUE NOT NULL,
+    Address         TEXT        NOT NULL,
+    Email           TEXT,
+    Password        TEXT        NOT NULL
 );
