@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS stay (
     Patient         INT         NOT NULL,
     Room            INT         NOT NULL,
     "Start"         TIMESTAMP   NOT NULL,
-    "End"           TIMESTAMP   NOT NULL,
+    "End"           TIMESTAMP,
     FOREIGN KEY (Patient) REFERENCES patient (SSN),
     FOREIGN KEY (Room) REFERENCES room (Number)
 );
