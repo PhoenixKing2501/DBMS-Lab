@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS patient (
     Name            TEXT        NOT NULL,
     Address         TEXT        NOT NULL,
     Phone           TEXT        NOT NULL,
-    InsuranceID     TEXT        NOT NULL,
+    InsuranceID     TEXT        UNIQUE,
     PCP             TEXT        NOT NULL,
     FOREIGN KEY (PCP) REFERENCES physician (EmployeeID)
 );
