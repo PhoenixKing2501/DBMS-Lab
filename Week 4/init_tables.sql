@@ -54,7 +54,7 @@ INSERT INTO patient
 VALUES
         (100000001,'Dilip Vengsarkar','42 Foobar Lane','555-0256','INS3','DOC1'),
         (100000002,'Richie Richardson','37 Infinite Loop','555-0512','INS1','DOC2'),
-        (100000003,'Mark Waugh','101 Parkway Street','555-1204','INS1','DOC2'),
+        (100000003,'Mark Waugh','101 Parkway Street','555-1204','INS5','DOC2'),
         (100000004,'Ramiz Raza','1100 Sparks Avenue','555-2048','INS9','DOC3');
 
 -- Room Table
