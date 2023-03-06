@@ -91,6 +91,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('profile') }}">
+                  <span data-feather="user"></span>
+                  Profile
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link active" href="#">
                   <span data-feather="layers"></span>
                   Enter details <span class="sr-only">(current)</span>
@@ -113,55 +119,75 @@
                   
                   <div class="prime">
                     <div class="col-md-6 mb-3">
-                      <label for="Name">Name</label>
-                      <input type="text" class="form-control" id="Name" name="name" placeholder="" value="" required>
+                      <label for="patient">Patient List</label>
+                      <select class="custom-select d-block w-100" id="patient" name="patient" required>
+                        <option value="">Choose...</option>
+                        {% for stuff in patient_list %}
+                            <option>{{ stuff }}</option>
+                        {% endfor %}
+                      </select>
                       <div class="invalid-feedback">
-                        Valid name is required.
+                        Please select a Patient.
                       </div>
                     </div>
                   </div>
 
-                  <div class="prime">
-                    <div class="col-md-6 mb-3">
-                      <label for="SSN">SSN</label>
-                      <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="SSN" name="ssn" placeholder="" value="" required>
-                      <div class="invalid-feedback">
-                        Valid SSN is required.
-                      </div>
-                    </div>
-                  </div>
+                  <p style="color:red;">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                          {% for message in messages %}
+                            {{ message }}
+                          {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </p>
 
                   <div class="options">
                     <div class="custom-control custom-radio">
-                      <input id="med" name="entryType" value="medication" type="radio" class="custom-control-input" required>
+                      <input id="med" name="entryType" value="medication" type="radio" class="custom-control-input" required
+                      onselect="document.getElementById('ifmed').setAttribute('required', 'required')">
                       <label class="custom-control-label" for="med">Medication</label>
                       <div class="reveal-if-active">  
-                        <div class="mb-3-1">
-                          <label for="physician">Physician</label>
-                          <input type="text" class="form-control" id="physician" name="physician" required>
-                          <div class="invalid-feedback">
-                            Please enter physician name.
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="physician">Physician</label>
+                            <select class="custom-select d-block w-100" id="ifmed" name="medphysician">
+                              <option value="">Choose...</option>
+                              {% for stuff in physician_list %}
+                                  <option>{{ stuff }}</option>
+                              {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a Physician.
+                            </div>
                           </div>
                         </div>
       
-                        <div class="mb-3-1">
-                          <label for="medication">Medication</label>
-                          <input type="text" class="form-control" id="medication" name="medication" required>
-                          <div class="invalid-feedback">
-                            Please enter medication name.
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="medication">Medication</label>
+                            <select class="custom-select d-block w-100" id="ifmed" name="medication">
+                              <option value="">Choose...</option>
+                              {% for stuff in medication_list %}
+                                  <option>{{ stuff }}</option>
+                              {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a medication.
+                            </div>
                           </div>
                         </div>
 
                         <div class="mb-3-1">
                           <label for="AppointmentID">AppointmentID <span class="text-muted">(Optional)</span></label>
-                          <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="AppointmentID" name="appointmentID" placeholder="" value="">
+                          <input type="text" pattern="APT[0-9]*" title="Please enter only numbers" class="form-control" id="AppointmentID" name="appointmentID" placeholder="" value="">
                         </div>
 
                         <div class="mb-3-1">
                           <label for="dose">Dose</label>
-                          <input type="text" class="form-control" id="dose" name="dose" required>
+                          <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="ifmed" name="dose">
                           <div class="invalid-feedback">
-                            Please enter dose name.
+                            Please enter dose value.
                           </div>
                         </div>
 
@@ -169,13 +195,14 @@
                     </div>
 
                     <div class="custom-control custom-radio">
-                      <input id="test" name="entryType" value="treatment" type="radio" class="custom-control-input" required>
+                      <input id="test" name="entryType" value="treatment" type="radio" class="custom-control-input" required
+                      onselect="document.getElementById('iftest').setAttribute('required', 'required')">
                       <label class="custom-control-label" for="test">Test/Treatment</label>
                       <div class="reveal-if-active">
                         <div class="row">
                           <div class="col-md-5 mb-3">
                             <label for="physician">Physician</label>
-                            <select class="custom-select d-block w-100" id="physician" name="physician" required>
+                            <select class="custom-select d-block w-100" id="iftest" name="testphysician">
                               <option value="">Choose...</option>
                               {% for stuff in physician_list %}
                                   <option>{{ stuff }}</option>
@@ -187,18 +214,10 @@
                           </div>
                         </div>
 
-                        <!-- <div class="mb-3-1">
-                          <label for="procedure">Procedure</label>
-                          <input type="text" class="form-control" id="procedure" name="physician" required>
-                          <div class="invalid-feedback">
-                            Please enter procedure.
-                          </div>
-                        </div> -->
-
                         <div class="row">
                           <div class="col-md-5 mb-3">
                             <label for="procedure">Procedure</label>
-                            <select class="custom-select d-block w-100" id="procedure" name="procedure" required>
+                            <select class="custom-select d-block w-100" id="iftest" name="procedure">
                               <option value="">Choose...</option>
                               {% for stuff in procedure_list %}
                                   <option>{{ stuff }}</option>
@@ -212,37 +231,38 @@
 
                         <div class="mb-3-1">
                           <label for="date">Date</label>
-                          <input type="date" class="form-control" id="date" name="date" required>
+                          <input type="date" class="form-control" id="iftest" name="date">
                           <div class="invalid-feedback">
                             Please enter date.
                           </div>
                         </div>
       
-                        <!-- <div class="mb-3-1">
-                          <label for="StayID">StayID</label>
-                          <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="StayID" name="stayID" required>
-                          <div class="invalid-feedback">
-                            Please enter StayID.
-                          </div>
-                        </div> -->
                       </div>
                     </div>
 
                     <div class="custom-control custom-radio">
-                      <input id="appoint" name="entryType" value="appointment" type="radio" class="custom-control-input" required>
+                      <input id="appoint" name="entryType" value="appointment" type="radio" class="custom-control-input" required
+                      onselect="document.getElementById('ifapp').setAttribute('required', 'required')">
                       <label class="custom-control-label" for="appoint">Appointment</label>
                       <div class="reveal-if-active">
-                        <div class="mb-3-1">
-                          <label for="physician">Physician</label>
-                          <input type="text" class="form-control" id="physician" name="appointment" required>
-                          <div class="invalid-feedback">
-                            Please enter physician name.
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="physician">Physician</label>
+                            <select class="custom-select d-block w-100" id="ifapp" name="appphysician">
+                              <option value="">Choose...</option>
+                              {% for stuff in physician_list %}
+                                  <option>{{ stuff }}</option>
+                              {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a Physician.
+                            </div>
                           </div>
                         </div>
 
                         <div class="mb-3-1">
                           <label for="date">Date</label>
-                          <input type="date" class="form-control" id="date" name="date" required>
+                          <input type="date" class="form-control" id="ifapp" name="date">
                           <div class="invalid-feedback">
                             Please enter date.
                           </div>
@@ -251,7 +271,7 @@
                         <div class = "row">
                           <div class="col-md-5 mb-3">
                             <label for="time">Time Slot</label>
-                            <select class="custom-select d-block w-100" id="time" name="time" required>
+                            <select class="custom-select d-block w-100" id="ifapp" name="time">
                               <option value="">Choose...</option>
                               <option>10:00 - 11:00</option>
                               <option>11:00 - 12:00</option>
@@ -266,20 +286,13 @@
                             </div>
                           </div>
                         </div>
-      
-                        <!-- <div class="mb-3-1">
-                          <label for="exam">Examination Room</label>
-                          <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="exam" name="examinationRoom" required>
-                          <div class="invalid-feedback">
-                            Please enter examination room.
-                          </div>
-                        </div>
                       </div>
-                    </div> -->
 
                   <hr class="mb-4">
                   <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="return confirm('Are you sure you want to submit?');" >Submit</button>
-                  </div>
+                </div>  
+              </div>  
+              </div>
                 </form>
               </div>
             </div>

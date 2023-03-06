@@ -3,6 +3,7 @@ import psycopg2
 import secrets
 import pandas as pd
 import bcrypt
+import datetime
 
 
 app = Flask(__name__)
@@ -192,7 +193,51 @@ def create_user():
 def delete_user():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('delete_user.html')
+
+    if request.method == 'POST':
+        # get form data
+        user = request.form['user']
+        employeeID = user.split(' - ')[0]
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        # delete from users
+        cursor.execute('''
+        DELETE FROM users
+        WHERE EmployeeID = %s
+        ''', 
+        (employeeID,)
+        )
+
+        # save changes
+        connection.commit()
+
+        # close connection
+        cursor.close()
+        connection.close()
+    # END if
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute('''
+    SELECT EmployeeID, Name, EmployeeType
+    FROM users
+    WHERE EmployeeID <> %s;
+    ''', (session['username'],))
+
+    records = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    user_list = []
+    for record in records:
+        user_list.append(record[0] + ' - ' + record[1] + ' - ' + record[2])
+
+    return render_template('delete_user.html', user_list=user_list)
+# END delete_user
 
 
 
@@ -397,7 +442,7 @@ def dashboard_deo():
         doc.Name AS "Physician",
         doc.EmployeeID AS "Physician ID",
         apt."Start", 
-        apt."End", 
+        apt."End"
     FROM 
         appointment AS apt, patient AS pat, physician AS doc
     WHERE apt.Patient = pat.SSN
@@ -424,43 +469,26 @@ def entry_deo():
     
     if request.method == 'POST':
         # get form data
-        name = request.form['name']
-        ssn = request.form['ssn']
+        patient = request.form['patient']
+        ssn = patient.split(' - ')[0]
         entryType = request.form['entryType']
-        physician = None
-        medication = None
-        appointmentID = None
-        dose = None
-        if entryType == 'medication':
-            physician = request.form['physician']
-            medication = request.form['medication']
-            dose = request.form['dose']
-            appointmentID = request.form['appointmentID']
 
-        procedure = None
-        stayID = None
-        date = None
-        if entryType == 'treatment':
-            physician = request.form['physician']
-            procedure = request.form['procedure']
-            stayID = request.form['stayID']
-            date = request.form['date']
-
-        time = None
-        room = None
-        if entryType == 'appointment':
-            physician = request.form['physician']
-            date = request.form['date']
-            time = request.form['time']
-            # examinationRoom = request.form['examinationRoom']
-        
         # connect to database
 
         connection = get_db_conn()
         cursor = connection.cursor()
 
         if entryType == 'medication':
-            # insert into medication
+            physician = request.form['medphysician']
+            physician = physician.split(' - ')[0]
+            medication = request.form['medication']
+            medication = medication.split(' - ')[0]
+            dose = request.form['dose']
+            appointmentID = request.form['appointmentID']
+            if appointmentID == '':
+                appointmentID = None
+
+            # insert into prescribes
             cursor.execute('''
             INSERT INTO prescribes
             VALUES (%s, %s, %s, CURRENT_TIMESTAMP, %s, %s);
@@ -468,8 +496,23 @@ def entry_deo():
             (physician, ssn, medication, appointmentID, dose)
             )
 
-        if entryType == 'treatment':
+
+        elif entryType == 'treatment':
+            physician = request.form['testphysician']
+            physician = physician.split(' - ')[0]
+            procedure = request.form['procedure']
+            procedure = procedure.split(' - ')[0]
+            date = request.form['date']
+
+            # get stayID 
+            cursor.execute('''SELECT StayID FROM stay WHERE Patient = %s AND "End" IS NULL;''', (ssn,))
             # insert into treatment
+            record = cursor.fetchone()
+
+            if record == None: # no stay record
+                flash('Patient not admitted',category='error')
+                return redirect('/entry_deo')
+            stayID = record[0]
             cursor.execute('''
             INSERT INTO treatment
             VALUES (%s, %s, %s, %s ,%s);
@@ -477,10 +520,28 @@ def entry_deo():
             (ssn, procedure, stayID, date, physician)
             )
 
-        if entryType == 'appointment':
+
+        elif entryType == 'appointment':
+            physician = request.form['appphysician']
+            physician = physician.split(' - ')[0]
+            date = request.form['date']
+            time = request.form['time']
+            # examinationRoom = request.form['examinationRoom']
             # insert into appointment
             start = date + ' ' + time.split('-')[0]
             end = date + ' ' + time.split('-')[1]
+
+            
+            # check if appointment is available
+            cursor.execute('''SELECT COUNT(*) FROM appointment WHERE "Start" < %s AND "End" > %s;''', (end, start))
+            record = cursor.fetchone()
+            if record[0] > 0 or start < datetime.now().strftime('%Y-%m-%d %H:%M:%S'):
+                flash('Appointment not available',category='error')
+
+                
+            
+
+
             cursor.execute('''
             INSERT INTO appointment
             VALUES (%s, %s, %s, %s, %s);
@@ -531,12 +592,19 @@ def entry_deo():
        procedure_list.append(str(procedure[0]) + ' - ' + str(procedure[1])) 
     
     return render_template('entry_deo.html',patient_list=patient_list, procedure_list=procedure_list,
-                           medication_list)
+                           medication_list=medication_list,physician_list=physician_list)
 
 @app.route('/delete_deo', methods=['GET', 'POST'])
 def delete_deo():
     if not session.get('logged_in'):
         return redirect('/login')
+    
+    if request.method == 'POST':
+        user = request.form['user']
+        # delete user from database table users
+        connection = get_db_conn()
+        
+        
     return render_template('delete_deo.html')
 
 
@@ -598,7 +666,54 @@ def logout():
 def profile():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('profile.html')
+    
+    if request.method == 'POST':
+        if request.form['ifchange'] == 'on':
+            # change password
+            old = request.form['old']
+            new = request.form['new']
+            confirm = request.form['confirm']
+
+            if new != confirm:
+                flash('Passwords do not match', category='error')
+                return redirect('/profile')
+            
+            connection = get_db_conn()
+            cursor = connection.cursor()
+            cursor.execute("SELECT password FROM users WHERE EmployeeID = %s", (session['username'],))
+            record = cursor.fetchone()
+            cursor.close()
+            connection.close()
+
+            if (not check_password_hash(old, record[0][2:-1])):
+                flash('Invalid password', category='error')
+                return redirect('/profile')
+            
+            connection = get_db_conn()
+            cursor = connection.cursor()
+
+            cursor.execute("UPDATE users SET password = %s WHERE EmployeeID = %s", (get_hashed_password(new), session['username']))
+
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            return redirect('/profile')
+        # END if
+    # END if
+
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE EmployeeID = %s;", (session['username'],))
+
+    record = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template('profile.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
+# END profile
 
 # main function
 

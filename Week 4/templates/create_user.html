@@ -56,6 +56,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('profile') }}">
+                  <span data-feather="user"></span>
+                  Profile
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link active" href="#">
                   <span data-feather="users"></span>
                   Create User <span class="sr-only">(current)</span>
@@ -74,21 +80,9 @@
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Create User</h1>
-            <!-- <div class="btn-toolbar mb-2 mb-md-0">
-              <div class="btn-group mr-2">
-                <button class="btn btn-sm btn-outline-secondary">Share</button>
-                <button class="btn btn-sm btn-outline-secondary">Export</button>
-              </div>
-              <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-              </button>
-            </div> -->
           </div>
 
-          <div class="container">
-            
-
+          <div class="container">           
             <div class="row">
               <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">User details</h4>
@@ -134,20 +128,21 @@
                       <label class="custom-control-label" for="data">Data Entry Operator</label>
                     </div>
                     <div class="custom-control custom-radio">
-                      <input id="doctor" name="user" type="radio" class="custom-control-input" value="doctor" required>
+                      <input id="doctor" name="user" type="radio" class="custom-control-input" value="doctor" required 
+                      onclick="document.getElementById('PosDep').setAttribute('required', 'required')">
                       <label class="custom-control-label" for="doctor">Doctor</label>
                       <div class="reveal-if-active">
                         <div class="row">
                           <div class="col-md-6 mb-3">
                             <label for="Name">Position</label>
-                            <input type="text" class="form-control" id="Name" name="position" placeholder="" value="" required>
+                            <input type="text" class="form-control" id="PosDep" name="position" placeholder="" value="">
                             <div class="invalid-feedback">
                               Position is required.
                             </div>
                           </div>
                           <div class="col-md-6 mb-3">
                             <label for="DepartmentID">Department</label>
-                            <input type="text" class="form-control" id="DepartmentID" name="departmentID" placeholder="" value="" required>
+                            <input type="text" class="form-control" id="PosDep" name="departmentID" placeholder="" value="">
                             <div class="invalid-feedback">
                               Department name is required.
                             </div>
