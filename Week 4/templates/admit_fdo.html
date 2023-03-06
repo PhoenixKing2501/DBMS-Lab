@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admit patient</title>
+    <title>Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/dashboard/">
 
@@ -26,11 +26,17 @@
         }); 
     </script>
 
+    <script>
+      function myFunction() {
+      alert("Data will now been submitted");
+      }
+    </script>
+
   </head>
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Front Desk Operator</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">DBMS Assgn</a>
       <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -45,13 +51,13 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('dashboard_fdo') }}">
+                <a class="nav-link active" href="#">
                   <span data-feather="home"></span>
-                  Dashboard 
+                  Dashboard <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ url_for('profile') }}">
                   <span data-feather="user"></span>
                   Profile
                 </a>
@@ -63,9 +69,9 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('admit_fdo') }}">
+                <a class="nav-link" href="{{ url_for('admit_fdo') }}">
                   <span data-feather="file"></span>
-                  Admit <span class="sr-only">(current)</span>
+                  Admit
                 </a>
               </li>
               <li class="nav-item">
@@ -80,8 +86,8 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Admit Patient</h1>
-            <!-- <div class="btn-toolbar mb-2 mb-md-0">
+            <h1 class="h2">Dashboard</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
                 <button class="btn btn-sm btn-outline-secondary">Share</button>
                 <button class="btn btn-sm btn-outline-secondary">Export</button>
@@ -90,73 +96,47 @@
                 <span data-feather="calendar"></span>
                 This week
               </button>
-            </div> -->
+            </div>
           </div>
 
           <div class="container">
             <div class="row">
               <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">Patient details</h4>
-                <form class="needs-validation" novalidate>
+                <form class="needs-validation" method="post" onsubmit="myFunction()">
+
                   <div class="row">
                     <div class="col-md-5 mb-3">
-                        <label for="name">Name</label>
-                        <select class="custom-select d-block w-100" id="name" required>
-                          <option value="">Choose...</option>
-                          <option>Spandan</option>
-                          <option>Utsav</option>
-                          <option>Saptarshi</option>
-                          <option>Spriha</option>
-                          <option>Sparsha</option>
-                        </select>
-                        <div class="invalid-feedback">
-                          Please select a patient name.
-                        </div>
+                      <label for="room">Room Number</label>
+                      <select class="custom-select d-block w-100" id="room" name="room" required>
+                        <option value="">Choose...</option>
+                        {% for stuff in room_list %}
+                            <option>{{ stuff }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select a Room.
                       </div>
-                  </div>
-      
-                  <div class="mb-3">
-                    <label for="room">Room Number</label>
-                    <input type="text" class="form-control" id="room" placeholder="" required>
-                    <div class="invalid-feedback">
-                      Please enter valid room number.
                     </div>
                   </div>
 
-                  <div class="mb-3">
-                    <label for="startdate">Start Date</label>
-                    <input type="date" class="form-control" id="startdate" required>
-                    <div class="invalid-feedback">
-                      Please enter start date.
-                    </div>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="starttime">Start Time</label>
-                    <input type="time" class="form-control" id="starttime" required>
-                    <div class="invalid-feedback">
-                      Please enter start time.
-                    </div>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="enddate">End Date</label>
-                    <input type="date" class="form-control" id="enddate" required>
-                    <div class="invalid-feedback">
-                      Please enter end date.
-                    </div>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="endtime">End Time</label>
-                    <input type="time" class="form-control" id="endtime" required>
-                    <div class="invalid-feedback">
-                      Please enter end time.
+                  <div class="row">
+                    <div class="col-md-5 mb-3">
+                      <label for="patient">Patient List</label>
+                      <select class="custom-select d-block w-100" id="patient" name="patient" required>
+                        <option value="">Choose...</option>
+                        {% for stuff in patient_list %}
+                            <option>{{ stuff }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select a Patient.
+                      </div>
                     </div>
                   </div>
                   
                   <hr class="mb-4">
-                  <button class="btn btn-primary btn-lg btn-block" type="submit">Admit Patient</button>
+                  <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="return confirm('Are you sure you want to submit?');">Admit Patient</button>
                 </form>
               </div>
             </div>

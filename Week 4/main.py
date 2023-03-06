@@ -212,23 +212,167 @@ def dashboard_fdo():
 def register_fdo():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('register_fdo.html')
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        ssn = request.form['ssn']
+        insuranceID = request.form['insuranceID']
+        phone = request.form['phone']
+        address = request.form['address']
+        country = request.form['country']
+        state = request.form['state']
+        pin = request.form['pin']
+        pcp = request.form['pcp']
+
+        address = address + ', ' + state + ', ' + country + ', ' + pin
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        cursor.execute('''
+        INSERT INTO patient
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ''', (ssn, name, address, phone, insuranceID, pcp.split(' - ')[0]))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return redirect('/register_fdo')
+    
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    # create a sql command for fetching list of Physican.id from Physician table
+    cursor.execute('''SELECT EmployeeID, Name FROM physician;''')
+    # fetch all the records from the database
+    records = cursor.fetchall()
+    # close the connection
+    cursor.close()
+    connection.close()
+
+    pcp_list = []
+    for record in records:
+        pcp_list.append(record[0] + ' - ' + record[1])
+    
+    
+    return render_template('register_fdo.html', pcp_list=pcp_list)
 
 @app.route('/admit_fdo', methods=['GET', 'POST'])
 def admit_fdo():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('admit_fdo.html')
+    
+    if request.method == 'POST':
+        room = request.form['room']
+        room = room.split(' - ')[0]
+        patient = request.form['patient']
+        ssn = patient.split(' - ')[0]
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        cursor.execute('''SELECT COUNT(*) FROM stay;''')
+        records = cursor.fetchall()
+        stayID = 'STY' + str(records[0][0] + 3501)
+
+        cursor.execute('''
+        INSERT INTO stay
+        VALUES (%s, %s, %s, CURRENT_TIMESTAMP, %s);
+        ''', (stayID, ssn, room, None))
+
+        cursor.execute('''UPDATE room SET Available = False WHERE Number = %s;''', (room,))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return redirect('/admit_fdo')
+    # END if
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    # fetch rooms
+    cursor.execute('''
+    SELECT Number, Type FROM room
+    WHERE Available = True;
+    ''')
+
+    records = cursor.fetchall()
+
+
+    room_list = []
+    for record in records:
+        room_list.append(str(record[0]) + ' - ' + str(record[1]))
+
+    # fetch patients
+    cursor.execute('''SELECT SSN, Name FROM patient;''')
+
+    records = cursor.fetchall()
+
+    patient_list = []
+    for record in records:
+        patient_list.append(str(record[0]) + ' - ' + str(record[1]))
+
+    cursor.close()
+    connection.close()
+    return render_template('admit_fdo.html', room_list=room_list, patient_list=patient_list)
+# END admit_fdo
 
 @app.route('/discharge_fdo', methods=['GET', 'POST'])
 def discharge_fdo():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('discharge_fdo.html')
+    
+    if request.method == 'POST':
+        patient = request.form['patient']
+        ssn = patient.split(' - ')[0]
 
+        connection = get_db_conn()
+        cursor = connection.cursor()
 
+        cursor.execute('''SELECT StayID, Room FROM stay WHERE Patient = %s AND "End" IS NULL;''', (ssn,))
 
+        records = cursor.fetchall()
+        
+        stayID = records[0][0]
+        room = records[0][1]
 
+        cursor.execute('''
+        UPDATE stay
+        SET "End" = CURRENT_TIMESTAMP
+        WHERE StayID = %s;
+        ''', (stayID,))
+
+        cursor.execute('''UPDATE room SET Available = True WHERE Number = %s;''', (room,))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return redirect('/discharge_fdo')
+    # END if
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    # fetch patients
+    cursor.execute('''
+    SELECT SSN, Name 
+    FROM patient, stay
+    WHERE patient.SSN = stay.Patient
+        AND stay."End" IS NULL;
+    ''')
+
+    records = cursor.fetchall()
+
+    patient_list = []
+    for record in records:
+        patient_list.append(str(record[0]) + ' - ' + str(record[1]))
+
+    return render_template('discharge_fdo.html', patient_list=patient_list)
+# END discharge_fdo
 
 
 
@@ -278,6 +422,80 @@ def dashboard_deo():
 def entry_deo():
     if not session.get('logged_in'):
         return redirect('/login')
+    
+    if request.method == 'POST':
+        # get form data
+        name = request.form['name']
+        ssn = request.form['ssn']
+        entryType = request.form['entryType']
+        physician = None
+        medication = None
+        appointmentID = None
+        dose = None
+        if entryType == 'medication':
+            physician = request.form['physician']
+            medication = request.form['medication']
+            dose = request.form['dose']
+            appointmentID = request.form['appointmentID']
+
+        procedure = None
+        stayID = None
+        date = None
+        if entryType == 'treatment':
+            physician = request.form['physician']
+            procedure = request.form['procedure']
+            stayID = request.form['stayID']
+            date = request.form['date']
+
+        time = None
+        room = None
+        if entryType == 'appointment':
+            physician = request.form['physician']
+            date = request.form['date']
+            time = request.form['time']
+            examinationRoom = request.form['examinationRoom']
+        
+        # connect to database
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        if entryType == 'medication':
+            # insert into medication
+            cursor.execute('''
+            INSERT INTO prescribes
+            VALUES (%s, %s, %s, CURRENT_TIMESTAMP, %s, %s);
+            ''', 
+            (physician, ssn, medication, appointmentID, dose)
+            )
+
+        if entryType == 'treatment':
+            # insert into treatment
+            cursor.execute('''
+            INSERT INTO treatment
+            VALUES (%s, %s, %s, %s ,%s);
+            ''', 
+            (ssn, procedure, stayID, date, physician)
+            )
+
+        if entryType == 'appointment':
+            # insert into appointment
+            start = date + ' ' + time.split('-')[0]
+            end = date + ' ' + time.split('-')[1]
+            cursor.execute('''
+            INSERT INTO appointment
+            VALUES (%s, %s, %s, %s, %s, %s);
+            ''', 
+            (appointmentID, ssn, physician, start, end, examinationRoom)
+            )
+
+        # save changes
+        connection.commit()
+
+        # close connection
+        cursor.close()
+        connection.close()
+
     return render_template('entry_deo.html')
 
 @app.route('/delete_deo', methods=['GET', 'POST'])
@@ -326,6 +544,8 @@ def login():
             return redirect('/dashboard_fdo')
         elif(record[0] == "data entry operator"):
             return redirect('/dashboard_deo')
+        else:
+            return redirect('/login')
         
     return render_template('login.html')
 # END login
@@ -336,10 +556,19 @@ def logout():
     return redirect('/')
 
 
+
+
+# profile for all users
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('profile.html')
+
 # main function
 
 def main():
-    app.run(debug=True)
+    app.run(debug=True,port = 10000)
 
 if __name__ == '__main__':
     main()

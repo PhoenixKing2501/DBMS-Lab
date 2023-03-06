@@ -109,7 +109,7 @@
             <div class="row">
               <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">Treatment details</h4>
-                <form class="needs-validation" method="post" onsubmit="myFunction()" novalidate>
+                <form class="needs-validation" method="post" onsubmit="myFunction()">
                   
                   <div class="prime">
                     <div class="col-md-6 mb-3">
@@ -124,7 +124,7 @@
                   <div class="prime">
                     <div class="col-md-6 mb-3">
                       <label for="SSN">SSN</label>
-                      <input type="number" class="form-control" id="SSN" name="ssn" placeholder="" value="" required>
+                      <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="SSN" name="ssn" placeholder="" value="" required>
                       <div class="invalid-feedback">
                         Valid SSN is required.
                       </div>
@@ -135,10 +135,10 @@
                     <div class="custom-control custom-radio">
                       <input id="med" name="entryType" value="medication" type="radio" class="custom-control-input" required>
                       <label class="custom-control-label" for="med">Medication</label>
-                      <div class="reveal-if-active">
+                      <div class="reveal-if-active">  
                         <div class="mb-3-1">
                           <label for="physician">Physician</label>
-                          <input type="text" class="form-control" id="physician" required>
+                          <input type="text" class="form-control" id="physician" name="physician" required>
                           <div class="invalid-feedback">
                             Please enter physician name.
                           </div>
@@ -146,7 +146,7 @@
       
                         <div class="mb-3-1">
                           <label for="medication">Medication</label>
-                          <input type="text" class="form-control" id="medication" required>
+                          <input type="text" class="form-control" id="medication" name="medication" required>
                           <div class="invalid-feedback">
                             Please enter medication name.
                           </div>
@@ -154,12 +154,12 @@
 
                         <div class="mb-3-1">
                           <label for="AppointmentID">AppointmentID <span class="text-muted">(Optional)</span></label>
-                          <input type="text" class="form-control" id="AppointmentID" placeholder="" value="">
+                          <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="AppointmentID" name="appointmentID" placeholder="" value="">
                         </div>
 
                         <div class="mb-3-1">
                           <label for="dose">Dose</label>
-                          <input type="text" class="form-control" id="dose" required>
+                          <input type="text" class="form-control" id="dose" name="dose" required>
                           <div class="invalid-feedback">
                             Please enter dose name.
                           </div>
@@ -169,12 +169,12 @@
                     </div>
 
                     <div class="custom-control custom-radio">
-                      <input id="test" name="entryType" value="Treatment" type="radio" class="custom-control-input" required>
+                      <input id="test" name="entryType" value="treatment" type="radio" class="custom-control-input" required>
                       <label class="custom-control-label" for="test">Test/Treatment</label>
                       <div class="reveal-if-active">
                         <div class="mb-3-1">
                           <label for="physician">Physician</label>
-                          <input type="text" class="form-control" id="physician" required>
+                          <input type="text" class="form-control" id="physician" name="physician" required>
                           <div class="invalid-feedback">
                             Please enter physician name.
                           </div>
@@ -182,15 +182,23 @@
 
                         <div class="mb-3-1">
                           <label for="procedure">Procedure</label>
-                          <input type="text" class="form-control" id="procedure" required>
+                          <input type="text" class="form-control" id="procedure" name="physician" required>
                           <div class="invalid-feedback">
                             Please enter procedure.
+                          </div>
+                        </div>
+
+                        <div class="mb-3-1">
+                          <label for="date">Date</label>
+                          <input type="date" class="form-control" id="date" name="date" required>
+                          <div class="invalid-feedback">
+                            Please enter date.
                           </div>
                         </div>
       
                         <div class="mb-3-1">
                           <label for="StayID">StayID</label>
-                          <input type="text" class="form-control" id="StayID" required>
+                          <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="StayID" name="stayID" required>
                           <div class="invalid-feedback">
                             Please enter StayID.
                           </div>
@@ -204,7 +212,7 @@
                       <div class="reveal-if-active">
                         <div class="mb-3-1">
                           <label for="physician">Physician</label>
-                          <input type="text" class="form-control" id="physician" required>
+                          <input type="text" class="form-control" id="physician" name="appointment" required>
                           <div class="invalid-feedback">
                             Please enter physician name.
                           </div>
@@ -212,32 +220,34 @@
 
                         <div class="mb-3-1">
                           <label for="date">Date</label>
-                          <input type="date" class="form-control" id="date" required>
+                          <input type="date" class="form-control" id="date" name="date" required>
                           <div class="invalid-feedback">
                             Please enter date.
                           </div>
                         </div>
-
-                        <div class="col-md-5 mb-3">
-                          <label for="time">Time Slot</label>
-                          <select class="custom-select d-block w-100" id="time" required>
-                            <option value="">Choose...</option>
-                            <option>10:00 - 11:00</option>
-                            <option>11:00 - 12:00</option>
-                            <option>12:00 - 13:00</option>
-                            <option>13:00 - 14:00</option>
-                            <option>14:00 - 15:00</option>
-                            <option>15:00 - 16:00</option>
-                            <option>16:00 - 17:00</option>
-                          </select>
-                          <div class="invalid-feedback">
-                            Please select a time slot.
+                        
+                        <div class = "row">
+                          <div class="col-md-5 mb-3">
+                            <label for="time">Time Slot</label>
+                            <select class="custom-select d-block w-100" id="time" name="time" required>
+                              <option value="">Choose...</option>
+                              <option>10:00 - 11:00</option>
+                              <option>11:00 - 12:00</option>
+                              <option>12:00 - 13:00</option>
+                              <option>13:00 - 14:00</option>
+                              <option>14:00 - 15:00</option>
+                              <option>15:00 - 16:00</option>
+                              <option>16:00 - 17:00</option>
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a time slot.
+                            </div>
                           </div>
                         </div>
       
                         <div class="mb-3-1">
                           <label for="exam">Examination Room</label>
-                          <input type="text" class="form-control" id="exam" required>
+                          <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="exam" name="examinationRoom" required>
                           <div class="invalid-feedback">
                             Please enter examination room.
                           </div>
