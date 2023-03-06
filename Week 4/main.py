@@ -208,6 +208,26 @@ def dashboard_fdo():
         return redirect('/login')
     return render_template('dashboard_fdo.html')
 
+@app.route('/register_fdo', methods=['GET', 'POST'])
+def register_fdo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('register_fdo.html')
+
+@app.route('/admit_fdo', methods=['GET', 'POST'])
+def admit_fdo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('admit_fdo.html')
+
+@app.route('/discharge_fdo', methods=['GET', 'POST'])
+def discharge_fdo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    return render_template('discharge_fdo.html')
+
+
+
 
 
 
@@ -227,21 +247,20 @@ def dashboard_deo():
     # upcoming appointments
     cursor.execute('''
     SELECT 
-        AppointmentID AS "Appointment ID", 
-        pat.Name AS "Patient, 
+        apt.AppointmentID AS "Appointment ID", 
+        pat.Name AS "Patient", 
         pat.SSN AS "Patient SSN", 
         doc.Name AS "Physician",
         doc.EmployeeID AS "Physician ID",
-        "Start", 
-        "End", 
+        apt."Start", 
+        apt."End", 
         ExaminationRoom AS "Examination Room"
     FROM 
         appointment AS apt, patient AS pat, physician AS doc
-    WHERE appointment.Patient = patient.SSN
-        AND appointment.Physician = physician.EmployeeID
-        AND "Start" > CURRENT_TIMESTAMP;
-    GROUP BY "Start"
-    ORDER BY "Start";
+    WHERE apt.Patient = pat.SSN
+        AND apt.Physician = doc.EmployeeID
+        AND apt."Start" > CURRENT_TIMESTAMP
+    ORDER BY apt."Start";
     ''')
 
     columns = [desc[0] for desc in cursor.description]
