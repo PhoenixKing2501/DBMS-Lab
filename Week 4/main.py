@@ -139,6 +139,7 @@ def create_user():
         pin = request.form['pin']
 
         password = get_hashed_password(employeeID)
+        password = str(password)
 
         connection = get_db_conn()
         cursor = connection.cursor()
