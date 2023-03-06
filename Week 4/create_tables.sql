@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS appointment (
     Physician       TEXT        NOT NULL,
     "Start"         TIMESTAMP   NOT NULL,
     "End"           TIMESTAMP   NOT NULL,
-    ExaminationRoom TEXT        NOT NULL,
+    /* ExaminationRoom TEXT        NOT NULL, */
     FOREIGN KEY (Patient) REFERENCES patient (SSN),
     FOREIGN KEY (Physician) REFERENCES physician (EmployeeID)
 );

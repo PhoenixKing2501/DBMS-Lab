@@ -60,7 +60,7 @@ def dashboard_doc():
     df_patient = pd.DataFrame(records, columns=columns)
 
     cursor.execute('''
-    SELECT AppointmentID AS "Appointment ID", Patient AS "Patient", "Start", "End", ExaminationRoom AS "Examination Room"
+    SELECT AppointmentID AS "Appointment ID", Patient AS "Patient", "Start", "End"
     FROM appointment
     WHERE Physician = %s
         AND "Start" > CURRENT_TIMESTAMP;
@@ -398,7 +398,6 @@ def dashboard_deo():
         doc.EmployeeID AS "Physician ID",
         apt."Start", 
         apt."End", 
-        ExaminationRoom AS "Examination Room"
     FROM 
         appointment AS apt, patient AS pat, physician AS doc
     WHERE apt.Patient = pat.SSN
@@ -453,7 +452,7 @@ def entry_deo():
             physician = request.form['physician']
             date = request.form['date']
             time = request.form['time']
-            examinationRoom = request.form['examinationRoom']
+            # examinationRoom = request.form['examinationRoom']
         
         # connect to database
 
@@ -484,9 +483,9 @@ def entry_deo():
             end = date + ' ' + time.split('-')[1]
             cursor.execute('''
             INSERT INTO appointment
-            VALUES (%s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s);
             ''', 
-            (appointmentID, ssn, physician, start, end, examinationRoom)
+            (appointmentID, ssn, physician, start, end)
             )
 
         # save changes
@@ -496,7 +495,43 @@ def entry_deo():
         cursor.close()
         connection.close()
 
-    return render_template('entry_deo.html')
+    # get the list of ssn patient from database
+    connection = get_db_conn()
+    cursor = connection.cursor()
+    
+    cursor.execute('''SELECT SSN, Name FROM patient;''')
+    # store in records 
+    records = cursor.fetchall()
+    patient_list = []
+    for patient in records:
+        patient_list.append(str(patient[0]) + ' - ' + str(patient[1]))
+        
+    # get the list of physicians from database
+    cursor.execute('''SELECT EmployeeID, Name FROM physician;''')
+    # store in records 
+    records = cursor.fetchall()
+    physician_list = []
+    for physician in records:
+        physician_list.append(str(physician[0]) + ' - ' + str(physician[1]))
+        
+    # get the list of medications from database
+    cursor.execute('''SELECT Code,Name FROM medication;''')
+    # store in records
+    records = cursor.fetchall()
+    medication_list = []
+    for medication in records:
+        medication_list.append(str(medication[0]) + ' - ' + str(medication[1]))
+        
+    # get the list of procedures from database
+    cursor.execute('''SELECT Code,Name FROM procedure;''')
+    # store in records
+    records = cursor.fetchall()
+    procedure_list = []
+    for procedure in records:
+       procedure_list.append(str(procedure[0]) + ' - ' + str(procedure[1])) 
+    
+    return render_template('entry_deo.html',patient_list=patient_list, procedure_list=procedure_list,
+                           medication_list)
 
 @app.route('/delete_deo', methods=['GET', 'POST'])
 def delete_deo():

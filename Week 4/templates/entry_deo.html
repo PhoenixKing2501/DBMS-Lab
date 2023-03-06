@@ -172,19 +172,41 @@
                       <input id="test" name="entryType" value="treatment" type="radio" class="custom-control-input" required>
                       <label class="custom-control-label" for="test">Test/Treatment</label>
                       <div class="reveal-if-active">
-                        <div class="mb-3-1">
-                          <label for="physician">Physician</label>
-                          <input type="text" class="form-control" id="physician" name="physician" required>
-                          <div class="invalid-feedback">
-                            Please enter physician name.
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="physician">Physician</label>
+                            <select class="custom-select d-block w-100" id="physician" name="physician" required>
+                              <option value="">Choose...</option>
+                              {% for stuff in physician_list %}
+                                  <option>{{ stuff }}</option>
+                              {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a Physician.
+                            </div>
                           </div>
                         </div>
 
-                        <div class="mb-3-1">
+                        <!-- <div class="mb-3-1">
                           <label for="procedure">Procedure</label>
                           <input type="text" class="form-control" id="procedure" name="physician" required>
                           <div class="invalid-feedback">
                             Please enter procedure.
+                          </div>
+                        </div> -->
+
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="procedure">Procedure</label>
+                            <select class="custom-select d-block w-100" id="procedure" name="procedure" required>
+                              <option value="">Choose...</option>
+                              {% for stuff in procedure_list %}
+                                  <option>{{ stuff }}</option>
+                              {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a Procedure.
+                            </div>
                           </div>
                         </div>
 
@@ -196,13 +218,13 @@
                           </div>
                         </div>
       
-                        <div class="mb-3-1">
+                        <!-- <div class="mb-3-1">
                           <label for="StayID">StayID</label>
                           <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="StayID" name="stayID" required>
                           <div class="invalid-feedback">
                             Please enter StayID.
                           </div>
-                        </div>
+                        </div> -->
                       </div>
                     </div>
 
@@ -245,7 +267,7 @@
                           </div>
                         </div>
       
-                        <div class="mb-3-1">
+                        <!-- <div class="mb-3-1">
                           <label for="exam">Examination Room</label>
                           <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="exam" name="examinationRoom" required>
                           <div class="invalid-feedback">
@@ -253,7 +275,7 @@
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
 
                   <hr class="mb-4">
                   <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="return confirm('Are you sure you want to submit?');" >Submit</button>
