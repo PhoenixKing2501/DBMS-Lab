@@ -61,19 +61,65 @@
             <h1 class="h2">All Patients</h1>
           </div>
 
-          <!-- <h2>Upcoming Appointments</h2>
-          <div class="table-responsive">
-            {% for stuff in appointment_table %}
-              {{ stuff|safe }}
-            {% endfor %}
-          </div>
+          <div class="container">
+            <div class="row">
+              <div class="col-md-8 order-md-1">
+                <h4 class="mb-3">Treatment details</h4>
+                <form class="needs-validation" method="post">
+                  
+                  <div class="prime">
+                    <div class="col-md-6 mb-3">
+                      <label for="patient">Patient List</label>
+                      <select class="custom-select d-block w-100" id="patient" name="patient" required>
+                        <option value="">Choose...</option>
+                        {% for stuff in patient_list %}
+                            <option>{{ stuff }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select a Patient.
+                      </div>
+                    </div>
+                  </div>
 
-          <h2>Patients</h2>
-          <div class="table-responsive">
-            {% for stuff in patient_table %}
-              {{ stuff|safe }}
-            {% endfor %}
-          </div> -->
+                  <p style="color:red;">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                          {% for message in messages %}
+                            {{ message }}
+                          {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </p>
+
+                  <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+                </form>
+
+
+                <h2>Medications</h2>
+                <div class="table-responsive">
+                  {% for stuff in med_table %}
+                    {{ stuff|safe }}
+                  {% endfor %}
+                </div>
+
+                <h2>Test/Treatments</h2>
+                <div class="table-responsive">
+                  {% for stuff in proc_table %}
+                    {{ stuff|safe }}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <footer class="my-5 pt-5 text-muted text-center text-small">
+              <p class="mb-1">&copy; DBMS Spr'22-23</p>
+              <!-- <ul class="list-inline">
+                <li class="list-inline-item"><a href="#">Privacy</a></li>
+                <li class="list-inline-item"><a href="#">Terms</a></li>
+                <li class="list-inline-item"><a href="#">Support</a></li>
+              </ul> -->
+            </footer>
         </main>
       </div>
     </div>

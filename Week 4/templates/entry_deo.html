@@ -66,9 +66,11 @@
       }
     </script>
 
+
   </head>
 
   <body>
+    
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Data Entry Operator</a>
       <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
@@ -185,7 +187,7 @@
 
                         <div class="mb-3-1">
                           <label for="dose">Dose</label>
-                          <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="ifmed" name="dose">
+                          <input type="number" class="form-control" id="ifmed" name="dose">
                           <div class="invalid-feedback">
                             Please enter dose value.
                           </div>
@@ -268,18 +270,20 @@
                           </div>
                         </div>
                         
+                        
                         <div class = "row">
                           <div class="col-md-5 mb-3">
                             <label for="time">Time Slot</label>
                             <select class="custom-select d-block w-100" id="ifapp" name="time">
                               <option value="">Choose...</option>
+                              <option>09:00 - 10:00</option>
                               <option>10:00 - 11:00</option>
                               <option>11:00 - 12:00</option>
-                              <option>12:00 - 13:00</option>
                               <option>13:00 - 14:00</option>
                               <option>14:00 - 15:00</option>
                               <option>15:00 - 16:00</option>
                               <option>16:00 - 17:00</option>
+                              <option>17:00 - 18:00</option>
                             </select>
                             <div class="invalid-feedback">
                               Please select a time slot.
@@ -310,6 +314,12 @@
         </main>
       </div>
     </div>
+
+    <script>
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementsByName("date")[0].setAttribute('min', today);
+        document.getElementsByName("date")[1].setAttribute('min', today);
+    </script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

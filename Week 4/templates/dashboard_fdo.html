@@ -20,7 +20,7 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Data Entry Operator</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Front Desk Operator</a>
       <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -73,14 +73,7 @@
             <h1 class="h2">Dashboard</h1>
           </div>
 
-          <h2>Upcoming Appointments</h2>
-          <div class="table-responsive">
-            {% for stuff in appointment_table %}
-              {{ stuff|safe }}
-            {% endfor %}
-          </div>
-
-          <h2>Patients</h2>
+          <h2>Admitted Patients</h2>
           <div class="table-responsive">
             {% for stuff in patient_table %}
               {{ stuff|safe }}

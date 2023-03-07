@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_login import login_user, current_user, logout_user, login_required
 import psycopg2
 import secrets
 import pandas as pd
@@ -41,7 +42,7 @@ def index():
 
 
 # doctor pages
-
+@login_required
 @app.route('/dashboard_doc', methods=['GET', 'POST'])
 def dashboard_doc():
     if not session.get('logged_in'):
@@ -79,11 +80,68 @@ def dashboard_doc():
                            appointment_table=[df_appointment.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
 # END dashboard_doc
 
+@login_required
 @app.route('/patients_doc', methods=['GET', 'POST'])
 def patients_doc():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('patients_doc.html')
+    
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute('''SELECT SSN, Name FROM patient;''')
+
+    records = cursor.fetchall()
+    patient_list = [f'{record[0]} - {record[1]}' for record in records]
+
+    cursor.close()
+    connection.close()
+
+    # if method is POST
+    if request.method == 'POST':
+        # get form data
+        patient = request.form['patient']
+        ssn = patient.split(' - ')[0]
+        name = patient.split(' - ')[1]
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        # get patient info
+        cursor.execute('''
+        SELECT medication AS "ID", name AS "Medication", dose AS "Dose", "Date"
+        FROM prescribes, medication
+        WHERE medication.Code = prescribes.Medication
+            AND Patient = %s;
+        ''', (ssn,))
+
+        columns = [desc[0] for desc in cursor.description]
+        records=cursor.fetchall()
+        df_med = pd.DataFrame(records, columns=columns)
+
+        cursor.execute('''
+        SELECT "Procedure" AS "ID", Name AS "Procedure", "Date"
+        FROM undergoes, "procedure"
+        WHERE "procedure".Code = undergoes."Procedure"
+            AND Patient = %s;
+        ''', (ssn,))
+
+        columns = [desc[0] for desc in cursor.description]
+        records=cursor.fetchall()
+
+        df_proc = pd.DataFrame(records, columns=columns)
+
+        cursor.close()
+        connection.close()
+
+        return render_template('patients_doc.html',
+                               name=name,
+                               patient_list=patient_list,
+                               med_table=[df_med.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')],
+                               proc_table=[df_proc.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
+    # End if
+
+    return render_template('patients_doc.html', patient_list=patient_list)
 # END patients_doc
 
 
@@ -92,7 +150,7 @@ def patients_doc():
 
 
 # admin pages
-
+@login_required
 @app.route('/dashboard_admin', methods=['GET', 'POST'])
 def dashboard_admin():
     if not session.get('logged_in'):
@@ -117,6 +175,7 @@ def dashboard_admin():
                            user_table=[df_users.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
 
 
+@login_required
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
     if not session.get('logged_in'):
@@ -189,6 +248,7 @@ def create_user():
     return render_template('create_user.html')
 # END create_user
 
+@login_required
 @app.route('/delete_user', methods=['GET', 'POST'])
 def delete_user():
     if not session.get('logged_in'):
@@ -246,13 +306,31 @@ def delete_user():
 
 
 # Front desk operator pages
-
+@login_required
 @app.route('/dashboard_fdo', methods=['GET', 'POST'])
 def dashboard_fdo():
     if not session.get('logged_in'):
         return redirect('/login')
-    return render_template('dashboard_fdo.html')
+    
+    connection=get_db_conn()
+    cursor=connection.cursor()
 
+    cursor.execute('''
+    SELECT SSN AS "SSN", patient.Name AS "Patient Name",  Phone AS "Phone", PCP AS "PCP ID", physician.Name AS "PCP Name"
+    FROM patient, physician, stay
+    WHERE patient.PCP = physician.EmployeeID
+        AND patient.SSN = stay.Patient
+        AND stay."End" IS NULL;
+    ''')
+
+    columns = [desc[0] for desc in cursor.description]
+    records=cursor.fetchall()
+    df_patient = pd.DataFrame(records, columns=columns)
+
+    return render_template('dashboard_fdo.html', 
+                           patient_table=[df_patient.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
+
+@login_required
 @app.route('/register_fdo', methods=['GET', 'POST'])
 def register_fdo():
     if not session.get('logged_in'):
@@ -303,6 +381,7 @@ def register_fdo():
     
     return render_template('register_fdo.html', pcp_list=pcp_list)
 
+@login_required
 @app.route('/admit_fdo', methods=['GET', 'POST'])
 def admit_fdo():
     if not session.get('logged_in'):
@@ -351,8 +430,8 @@ def admit_fdo():
     for record in records:
         room_list.append(str(record[0]) + ' - ' + str(record[1]))
 
-    # fetch patients
-    cursor.execute('''SELECT SSN, Name FROM patient;''')
+    # fetch patients not admitted currently
+    cursor.execute('''SELECT SSN, Name FROM patient WHERE SSN NOT IN (SELECT Patient FROM Stay WHERE "End" IS NULL) ;''')
 
     records = cursor.fetchall()
 
@@ -365,6 +444,7 @@ def admit_fdo():
     return render_template('admit_fdo.html', room_list=room_list, patient_list=patient_list)
 # END admit_fdo
 
+@login_required
 @app.route('/discharge_fdo', methods=['GET', 'POST'])
 def discharge_fdo():
     if not session.get('logged_in'):
@@ -424,7 +504,7 @@ def discharge_fdo():
 
 
 # Data entry operator pages
-
+@login_required
 @app.route('/dashboard_deo', methods=['GET', 'POST'])
 def dashboard_deo():
     if not session.get('logged_in'):
@@ -462,6 +542,7 @@ def dashboard_deo():
                            apt_table=[df_apt.to_html(classes='table table-striped table-sm', header=True, index=False, border=0, justify='left')])
 # END dashboard_deo
 
+@login_required
 @app.route('/entry_deo', methods=['GET', 'POST'])
 def entry_deo():
     if not session.get('logged_in'):
@@ -522,6 +603,7 @@ def entry_deo():
 
 
         elif entryType == 'appointment':
+            # 
             physician = request.form['appphysician']
             physician = physician.split(' - ')[0]
             date = request.form['date']
@@ -537,7 +619,8 @@ def entry_deo():
             record = cursor.fetchone()
             if record[0] > 0 or start < datetime.now().strftime('%Y-%m-%d %H:%M:%S'):
                 flash('Appointment not available',category='error')
-
+                return redirect('/entry_deo')
+            # stuff to do
                 
             
 
@@ -594,6 +677,8 @@ def entry_deo():
     return render_template('entry_deo.html',patient_list=patient_list, procedure_list=procedure_list,
                            medication_list=medication_list,physician_list=physician_list)
 
+
+@login_required
 @app.route('/delete_deo', methods=['GET', 'POST'])
 def delete_deo():
     if not session.get('logged_in'):
@@ -613,7 +698,6 @@ def delete_deo():
 
 
 # login and logout
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -662,6 +746,8 @@ def logout():
 
 
 # profile for all users
+
+@login_required
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if not session.get('logged_in'):
