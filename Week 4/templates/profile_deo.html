@@ -18,18 +18,24 @@
     <link href="https://getbootstrap.com/docs/4.0/examples/dashboard/dashboard.css" rel="stylesheet">
 
     <style>
-      .reveal-if-active {
+      .main {
+        margin-left: 50%;
+      }
+      .mb-3 {
+        text-align: left;
+      }
+      /*.reveal-if-active {
       opacity: 0;
       max-height: 0;
       overflow: hidden;
       }
       input[type="checkbox"]:checked ~ .reveal-if-active {
       opacity: 1;
-      max-height: 100px; /* little bit of a magic number :( */
+      max-height: 100px;
       overflow: visible;
       margin-top: 10px;
       margin-left: 0;
-      }
+      }*/
     </style>
 
     <script>
@@ -42,7 +48,7 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Profile</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Data Entry Operator</a>
       <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -53,57 +59,41 @@
 
     <div class="container-fluid">
       <div class="row">
-        <!-- <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('dashboard_admin') }}">
+                <a class="nav-link" href="{{ url_for('dashboard_deo') }}">
                   <span data-feather="home"></span>
                   Dashboard 
                 </a>
               </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file"></span>
-                  Orders
+              <li class="nav-item">
+                <a class="nav-link active" href="#">
+                  <span data-feather="user"></span>
+                  Profile <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="shopping-cart"></span>
-                  Products
+                <a class="nav-link" href="{{ url_for('changepassword') }}">
+                  <span data-feather="user"></span>
+                  Change Password
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="users"></span>
-                  Create User <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('delete_user') }}">
-                  <span data-feather="users"></span>
-                  Delete User
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="bar-chart-2"></span>
-                  Reports
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ url_for('entry_deo') }}">
                   <span data-feather="layers"></span>
-                  Notifications
+                  Enter details
                 </a>
               </li>
             </ul>
           </div>
-        </nav> -->
+        </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Profile</h1>
+          </div>
 
           <div class="container">
             
@@ -112,73 +102,77 @@
               <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">User details</h4>
                 <form class="needs-validation" method="post" onsubmit="myFunction()" novalidate>
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <label for="Name">Name</label>
-                      <br>
-                      {{name}}
+                  <div class="main">
+                    <div class="mb-3">
+                      <h5>
+                        <label for="Name">Name: </label>
+                        
+                        {{name}}
+                      </h5>
                     </div>
-                    <div class="col-md-6 mb-3">
-                      <label for="EmployeeID">EmployeeID</label>
-                      <br>
-                      {{employeeid}}
+                    <div class="mb-3">
+                      <h5>
+                        <label for="EmployeeID">EmployeeID: </label>
+                        
+                        {{employeeid}}
+                      </h5>
                     </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="username">SSN</label>
-                        <br>
+        
+                    <div class="mb-3">
+                      <h5>
+                        <label for="username">SSN: </label>
+                        
                         {{ssn}}
+                      </h5>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="username">User Type</label>
-                        <br>
-                        {{userType}}
+
+                    <!-- <div class="mb-3">
+                      <h5>
+                        <label for="phone">Phone Number: </label>
+                        
+                        {{phone}}
+                      </h5>
+                    </div> -->
+        
+                    <div class="mb-3">
+                      <h5>
+                        <label for="email">Email: </label>
+                        
+                        {{email}}
+                      </h5>
                     </div>
-                  </div>
-
-                  <!-- <div class="mb-3">
-                    <label for="phone">Phone Number</label>
-                    <br>
-                    {{phone}}
-                  </div> -->
-      
-                  <div class="mb-3">
-                    <label for="email">Email</label>
-                    <br>
-                    {{email}}
-                  </div>
-      
-                  <div class="mb-3">
-                    <label for="address">Address</label>
-                    <br>
-                    {{address}}
-                  </div>
-
-                  <div class="d-block my-3">
+        
+                    <div class="mb-3">
+                      <h5>
+                        <label for="address">Current Address: </label>
+                        
+                        {{address}}
+                      </h5>
+                    </div>
+                  </div> 
+                  <!-- <div class="d-block my-3">
                     <div class="custom-control custom-button">
-                      <input id="changep" name="ifchange" value="on" type="checkbox" class="custom-control-input" required>
-                      <label class="custom-control-label" for="changep">Change Password</label>
-                      <!-- <button class="changep" type="button">Change Password</button> -->
+                      <input id="changep" name="user" type="checkbox" class="custom-control-input" required>
+                      <label class="custom-control-label" for="changep"><h6>Change Password</h6></label>
+                      <button class="changep" type="button">Change Password</button>
                       <div class="reveal-if-active">
                         <div class="mb-3">
                             <label for="old">Old Password</label>
-                            <input type="text" class="form-control" id="old" name="old" placeholder="" value="" required>
+                            <input type="text" class="form-control" id="old" placeholder="" value="" required>
                             <div class="invalid-feedback">
                                 Please enter old password.
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="new">New Password</label>
-                            <input type="text" class="form-control" id="new" name="new" placeholder="" value="" required>
+                            <input type="text" class="form-control" id="new" placeholder="" value="" required>
                             <div class="invalid-feedback">
                                 Please enter new password.
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="confirm">Confirm Password</label>
-                            <input type="text" class="form-control" id="confirm" name="confirm" placeholder="" value="" required>
+                            <input type="text" class="form-control" id="confirm" placeholder="" value="" required>
                             <div class="invalid-feedback">
                                 Please confirm new password.
                             </div>
@@ -186,7 +180,7 @@
                         <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="return confirm('Are you sure you want to submit?');">Confirm Password</button>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   
                 </form>
               </div>

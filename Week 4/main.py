@@ -744,52 +744,55 @@ def logout():
     return redirect('/')
 
 
+@app.route('/changepassword', methods=['GET', 'POST'])
+def changepassword():
+    if request.method == 'POST':
+        # change password
+        old = request.form['old']
+        new = request.form['new']
+        confirm = request.form['confirm']
+
+        if new != confirm:
+            flash('Passwords do not match', category='error')
+            return redirect('/changepassword')
+        
+        connection = get_db_conn()
+        cursor = connection.cursor()
+        cursor.execute("SELECT password FROM users WHERE EmployeeID = %s", (session['username'],))
+        record = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if (not check_password_hash(old, record[0][2:-1])):
+            flash('Invalid password', category='error')
+            return redirect('/changepassword')
+        
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        cursor.execute("UPDATE users SET password = %s WHERE EmployeeID = %s", (str(get_hashed_password(new)), session['username']))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        session['logged_in'] = False
+        return redirect('/login')
+    # END if
+    return render_template('password.html')
+# END changepassword
+
+
 
 
 # profile for all users
 
 @login_required
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile_deo')
 def profile():
     if not session.get('logged_in'):
         return redirect('/login')
     
-    if request.method == 'POST':
-        if request.form['ifchange'] == 'on':
-            # change password
-            old = request.form['old']
-            new = request.form['new']
-            confirm = request.form['confirm']
-
-            if new != confirm:
-                flash('Passwords do not match', category='error')
-                return redirect('/profile')
-            
-            connection = get_db_conn()
-            cursor = connection.cursor()
-            cursor.execute("SELECT password FROM users WHERE EmployeeID = %s", (session['username'],))
-            record = cursor.fetchone()
-            cursor.close()
-            connection.close()
-
-            if (not check_password_hash(old, record[0][2:-1])):
-                flash('Invalid password', category='error')
-                return redirect('/profile')
-            
-            connection = get_db_conn()
-            cursor = connection.cursor()
-
-            cursor.execute("UPDATE users SET password = %s WHERE EmployeeID = %s", (str(get_hashed_password(new)), session['username']))
-
-            connection.commit()
-            cursor.close()
-            connection.close()
-
-            session['logged_in'] = False
-            return redirect('/login')
-        # END if
-    # END if
-
 
     connection = get_db_conn()
     cursor = connection.cursor()
@@ -800,8 +803,68 @@ def profile():
     cursor.close()
     connection.close()
 
-    return render_template('profile.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
-# END profile
+    return render_template('profile_deo.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
+# END profile_deo
+
+@login_required
+@app.route('/profile_doc')
+def profile_doc():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE EmployeeID = %s;", (session['username'],))
+
+    record = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template('profile_doc.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
+# END profile_doc
+
+@login_required
+@app.route('/profile_adm')
+def profile_adm():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE EmployeeID = %s;", (session['username'],))
+
+    record = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template('profile_adm.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
+# END profile_adm
+
+@login_required
+@app.route('/profile_fdo')
+def profile_fdo():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE EmployeeID = %s;", (session['username'],))
+
+    record = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    return render_template('profile_fdo.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
+# END profile_deo
+
+
+
 
 # main function
 
