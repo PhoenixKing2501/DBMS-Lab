@@ -4,7 +4,7 @@ import psycopg2
 import secrets
 import pandas as pd
 import bcrypt
-import datetime
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -583,7 +583,7 @@ def entry_deo():
             physician = physician.split(' - ')[0]
             procedure = request.form['procedure']
             procedure = procedure.split(' - ')[0]
-            date = request.form['date']
+            date = request.form['prodate']
 
             # get stayID 
             cursor.execute('''SELECT StayID FROM stay WHERE Patient = %s AND "End" IS NULL;''', (ssn,))
@@ -603,15 +603,14 @@ def entry_deo():
 
 
         elif entryType == 'appointment':
-            # 
             physician = request.form['appphysician']
             physician = physician.split(' - ')[0]
-            date = request.form['date']
+            date = request.form['appdate']
             time = request.form['time']
             # examinationRoom = request.form['examinationRoom']
             # insert into appointment
-            start = date + ' ' + time.split('-')[0]
-            end = date + ' ' + time.split('-')[1]
+            start = date + ' ' + time.split(' - ')[0]
+            end = date + ' ' + time.split(' - ')[1]
 
             
             # check if appointment is available
@@ -620,9 +619,11 @@ def entry_deo():
             if record[0] > 0 or start < datetime.now().strftime('%Y-%m-%d %H:%M:%S'):
                 flash('Appointment not available',category='error')
                 return redirect('/entry_deo')
-            # stuff to do
-                
             
+            # get appointmentID
+            cursor.execute('''SELECT COUNT(*) FROM appointment;''')
+            record = cursor.fetchone()
+            appointmentID = 'APT' + str(record[0] + 101)
 
 
             cursor.execute('''
