@@ -584,6 +584,11 @@ def entry_deo():
             procedure = request.form['procedure']
             procedure = procedure.split(' - ')[0]
             date = request.form['prodate']
+            file = request.files['file']
+            filedata = None
+            if file.filename != '':
+                filedata = file.read()
+
 
             # get stayID 
             cursor.execute('''SELECT StayID FROM stay WHERE Patient = %s AND "End" IS NULL;''', (ssn,))
@@ -595,10 +600,10 @@ def entry_deo():
                 return redirect('/entry_deo')
             stayID = record[0]
             cursor.execute('''
-            INSERT INTO treatment
-            VALUES (%s, %s, %s, %s ,%s);
+            INSERT INTO undergoes
+            VALUES (%s, %s, %s, %s ,%s, %s);
             ''', 
-            (ssn, procedure, stayID, date, physician)
+            (ssn, procedure, stayID, date, physician, filedata)
             )
 
 
@@ -789,7 +794,7 @@ def changepassword():
 
 @login_required
 @app.route('/profile_deo')
-def profile():
+def profile_deo():
     if not session.get('logged_in'):
         return redirect('/login')
     

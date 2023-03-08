@@ -123,7 +123,7 @@
             <div class="row">
               <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">Treatment details</h4>
-                <form class="needs-validation" method="post" onsubmit="myFunction()">
+                <form class="needs-validation" method="post" enctype="multipart/form-data" onsubmit="myFunction()">
                   
                   <div class="prime">
                     <div class="col-md-6 mb-3">
@@ -201,7 +201,7 @@
 
                       </div>
                     </div>
-
+                    <br>
                     <div class="custom-control custom-radio">
                       <input id="test" name="entryType" value="treatment" type="radio" class="custom-control-input" required
                       onselect="document.getElementById('iftest').setAttribute('required', 'required')">
@@ -236,18 +236,27 @@
                             </div>
                           </div>
                         </div>
+                        
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="date">Date</label>
+                            <input type="date" class="form-control" id="iftest" name="prodate">
+                            <div class="invalid-feedback">
+                              Please enter date.
+                            </div>
+                          </div>
+                        </div>
 
-                        <div class="mb-3-1">
-                          <label for="date">Date</label>
-                          <input type="date" class="form-control" id="iftest" name="prodate">
-                          <div class="invalid-feedback">
-                            Please enter date.
+                        <div class="row">
+                          <div class="col-md-5 mb-3">
+                            <label for="File">Upload Report</label>
+                            <input type="file" id="File" name="file">
                           </div>
                         </div>
       
                       </div>
                     </div>
-
+                    <br>
                     <div class="custom-control custom-radio">
                       <input id="appoint" name="entryType" value="appointment" type="radio" class="custom-control-input" required
                       onselect="document.getElementById('ifapp').setAttribute('required', 'required')">

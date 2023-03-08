@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS undergoes (
     Stay            TEXT,
     "Date"     TIMESTAMP,
     Physician       TEXT         NOT NULL,
+    filedata        BYTEA,
     PRIMARY KEY (Patient, "Procedure", Stay, "Date"),
     FOREIGN KEY (Patient) REFERENCES patient (SSN),
     FOREIGN KEY ("Procedure") REFERENCES "procedure" (Code),
