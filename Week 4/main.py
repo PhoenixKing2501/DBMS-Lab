@@ -779,13 +779,14 @@ def profile():
             connection = get_db_conn()
             cursor = connection.cursor()
 
-            cursor.execute("UPDATE users SET password = %s WHERE EmployeeID = %s", (get_hashed_password(new), session['username']))
+            cursor.execute("UPDATE users SET password = %s WHERE EmployeeID = %s", (str(get_hashed_password(new)), session['username']))
 
             connection.commit()
             cursor.close()
             connection.close()
 
-            return redirect('/profile')
+            session['logged_in'] = False
+            return redirect('/login')
         # END if
     # END if
 
