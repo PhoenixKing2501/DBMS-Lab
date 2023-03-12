@@ -5,10 +5,22 @@ import secrets
 import pandas as pd
 import bcrypt
 from datetime import datetime
+import getpass
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+   
 
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(32)  # generate a random key for session
+
+# global variables
+global fromaddr # sender email address
+global mail_pass # email password
 
 
 # utility functions
@@ -143,6 +155,114 @@ def patients_doc():
 
     return render_template('patients_doc.html', patient_list=patient_list)
 # END patients_doc
+
+@login_required
+@app.route('/entry_doc', methods=['GET', 'POST'])
+def entry_doc():
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+    if request.method == 'POST':
+        # get form data
+        patient = request.form['patient']
+        ssn = patient.split(' - ')[0]
+        entryType = request.form['entryType']
+
+        # connect to database
+
+        connection = get_db_conn()
+        cursor = connection.cursor()
+
+        if entryType == 'medication':
+            physician = session['username']
+            medication = request.form['medication']
+            medication = medication.split(' - ')[0]
+            dose = request.form['dose']
+            appointmentID = request.form['appointmentID']
+            if appointmentID == '':
+                appointmentID = None
+
+            # insert into prescribes
+            cursor.execute('''
+            INSERT INTO prescribes
+            VALUES (%s, %s, %s, CURRENT_TIMESTAMP, %s, %s);
+            ''', 
+            (physician, ssn, medication, appointmentID, dose)
+            )
+
+
+        elif entryType == 'treatment':
+            physician = session['username']
+            procedure = request.form['procedure']
+            procedure = procedure.split(' - ')[0]
+            date = request.form['prodate']
+            file = request.files['file']
+            filedata = None
+            if file.filename != '':
+                filedata = file.read()
+                cursor.execute('''SELECT email FROM users WHERE EmployeeID = 
+                (SELECT PCP FROM patient WHERE SSN = %s);''', (ssn,))
+                record = cursor.fetchone()
+                send_mail(toaddr=record[0], subject='New File Uploaded', body='Your patient has a report uploaded.', filename=file.filename, filedata=filedata)
+
+            file.close()
+
+            # get stayID 
+            cursor.execute('''SELECT StayID FROM stay WHERE Patient = %s AND "End" IS NULL;''', (ssn,))
+            # insert into treatment
+            record = cursor.fetchone()
+
+            if record == None: # no stay record
+                flash('Patient not admitted',category='error')
+                return redirect('/entry_doc')
+            stayID = record[0]
+            cursor.execute('''
+            INSERT INTO undergoes
+            VALUES (%s, %s, %s, %s ,%s, %s);
+            ''', 
+            (ssn, procedure, stayID, date, physician, filedata)
+            )
+
+
+        # save changes
+        connection.commit()
+
+        # close connection
+        cursor.close()
+        connection.close()
+
+    # get the list of ssn patient from database
+    connection = get_db_conn()
+    cursor = connection.cursor()
+    
+    cursor.execute('''SELECT SSN, Name FROM patient;''')
+    # store in records 
+    records = cursor.fetchall()
+    patient_list = []
+    for patient in records:
+        patient_list.append(str(patient[0]) + ' - ' + str(patient[1]))
+
+        
+    # get the list of medications from database
+    cursor.execute('''SELECT Code,Name FROM medication;''')
+    # store in records
+    records = cursor.fetchall()
+    medication_list = []
+    for medication in records:
+        medication_list.append(str(medication[0]) + ' - ' + str(medication[1]))
+        
+    # get the list of procedures from database
+    cursor.execute('''SELECT Code,Name FROM procedure;''')
+    # store in records
+    records = cursor.fetchall()
+    procedure_list = []
+    for procedure in records:
+       procedure_list.append(str(procedure[0]) + ' - ' + str(procedure[1])) 
+    
+    return render_template('entry_doc.html',patient_list=patient_list, procedure_list=procedure_list,
+                           medication_list=medication_list)
+
+
 
 
 
@@ -588,6 +708,12 @@ def entry_deo():
             filedata = None
             if file.filename != '':
                 filedata = file.read()
+                cursor.execute('''SELECT email FROM users WHERE EmployeeID = 
+                (SELECT PCP FROM patient WHERE SSN = %s);''', (ssn,))
+                record = cursor.fetchone()
+                send_mail(toaddr=record[0], subject='New File Uploaded', body='Your patient has a report uploaded.', filename=file.filename, filedata=filedata)
+
+            file.close()
 
 
             # get stayID 
@@ -682,7 +808,7 @@ def entry_deo():
     
     return render_template('entry_deo.html',patient_list=patient_list, procedure_list=procedure_list,
                            medication_list=medication_list,physician_list=physician_list)
-
+# END entry_deo
 
 @login_required
 @app.route('/delete_deo', methods=['GET', 'POST'])
@@ -868,12 +994,42 @@ def profile_fdo():
     return render_template('profile_fdo.html', name=record[1], employeeid=record[0], ssn=record[3], userType=record[2], email=record[5], address=record[4])
 # END profile_deo
 
+def send_mail(toaddr, subject, body, filename=None, filedata=None):
+    global fromaddr, mail_pass
+    msg = MIMEMultipart()
+    msg['From'] = fromaddr
+    msg['To'] = toaddr
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
 
+    if filename != None:
+        p = MIMEBase('application', 'octet-stream')
+        p.set_payload(filedata)
+        encoders.encode_base64(p)
+        p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        msg.attach(p)
+    
+    mail_server = smtplib.SMTP('smtp.gmail.com', 587)
+    mail_server.starttls()
+    mail_server.login(fromaddr, mail_pass)
+    
+    mail_server.sendmail(fromaddr, toaddr, msg.as_string())
+    mail_server.quit()
+# END send_mail
 
 
 # main function
 
 def main():
+    global fromaddr, mail_pass
+    parser = ArgumentParser(description='Hospital Management System')
+    parser.add_argument('-e', '--email', help='sender email id')
+    parser.add_argument('-p', '--password', help='sender email password')
+    args = vars(parser.parse_args())
+
+    fromaddr = args['email']
+    mail_pass = args['password']
+
     app.run(debug=True,port = 10000)
 
 if __name__ == '__main__':

@@ -55,7 +55,13 @@
               <li class="nav-item">
                 <a class="nav-link active" href="#">
                   <span data-feather="users"></span>
-                  Patients <span class="sr-only">(current)</span>
+                  View Patients <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('entry_doc') }}">
+                  <span data-feather="users"></span>
+                  Enter Patient details
                 </a>
               </li>
             </ul>
@@ -101,6 +107,8 @@
                   <button class="btn btn-primary btn-lg" type="submit">Submit</button>
                 </form>
 
+                <h4>Patient Name</h4>
+                <p>{{  name  }}</p>
 
                 <h2>Medications</h2>
                 <div class="table-responsive">

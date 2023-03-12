@@ -127,15 +127,15 @@ VALUES
 -- Appointment Table
 INSERT INTO appointment 
 VALUES
-        ('APT013',100000001,'DOC3','2018-04-24 10:00','2018-04-24 11:00'),
-        ('APT026',100000002,'DOC2','2018-04-24 10:00','2018-04-24 11:00'),
-        ('APT036',100000001,'DOC1','2018-04-25 10:00','2018-04-25 11:00'),
-        ('APT046',100000004,'DOC4','2018-04-25 10:00','2018-04-25 11:00'),
-        ('APT059',100000004,'DOC4','2018-04-26 10:00','2018-04-26 11:00'),
-        ('APT069',100000003,'DOC2','2018-04-26 11:00','2018-04-26 12:00'),
-        ('APT076',100000001,'DOC3','2018-04-26 12:00','2018-04-26 13:00'),
-        ('APT086',100000004,'DOC9','2018-04-27 10:00','2018-04-21 11:00'),
-        ('APT093',100000002,'DOC2','2018-04-27 10:00','2018-04-27 11:00');
+        ('APT013',100000001,'DOC3','2023-03-14 10:00','2023-03-14 11:00'),
+        ('APT026',100000002,'DOC2','2023-03-14 10:00','2023-03-14 11:00'),
+        ('APT036',100000001,'DOC1','2023-03-15 10:00','2023-03-15 11:00'),
+        ('APT046',100000004,'DOC4','2023-03-15 10:00','2023-03-15 11:00'),
+        ('APT059',100000004,'DOC4','2023-03-16 10:00','2023-03-16 11:00'),
+        ('APT069',100000003,'DOC2','2023-03-16 11:00','2023-03-16 12:00'),
+        ('APT076',100000001,'DOC3','2023-03-16 12:00','2023-03-16 13:00'),
+        ('APT086',100000004,'DOC9','2023-03-17 10:00','2023-03-11 11:00'),
+        ('APT093',100000002,'DOC2','2023-03-17 10:00','2023-03-17 11:00');
 
 -- Prescribes Table
 INSERT INTO prescribes 
@@ -151,9 +151,9 @@ VALUES
 -- User Table
 INSERT INTO users
 VALUES
-        ('DOC1','Alan Donald','doctor',111111111, 'ABC Street, WB, India, 722102', 'xyz@gmail.com', 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
-        ('DOC2','Bruce Reid','doctor',222222222, 'ABC Street, WB, India, 722103', 'abc@gmail.com', 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
-        ('DOC3','Courtney Walsh','doctor',333333333, 'XYZ Street, WB, India, 722104', 'xyz@gmail.com', 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
+        ('DOC1','Alan Donald','doctor',111111111, 'ABC Street, WB, India, 722102', 'swarupksms@gmail.com', 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
+        ('DOC2','Bruce Reid','doctor',222222222, 'ABC Street, WB, India, 722103', 'anamitra137@gmail.com', 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
+        ('DOC3','Courtney Walsh','doctor',333333333, 'XYZ Street, WB, India, 722104', 'utsavbasu2501@gmail.com', 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
         ('DOC4','Malcom Marshall','doctor',444444444, 'XYZ Street, WB, India, 722104', NULL, 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
         ('DOC5','Dennis Lillee','doctor',555555555, 'ABC Street, WB, India, 722102', NULL, 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
         ('DOC6','Jeff Thomson','doctor',666666666,'ABC Street, WB, India, 722102', NULL, 'b''$2b$12$V2p5g77lpRW1gWvb9V96ou5rj2IQa2f1kxYNHobcUa80BA8F6/5T6'''),
