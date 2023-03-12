@@ -330,6 +330,12 @@ def create_user():
             email = None
         
         # insert into users
+        cursor.execute('''SELECT * FROM users WHERE EmployeeID = %s;''', (employeeID,))
+        record = cursor.fetchone()
+        if record != None:
+            flash('Employee ID already exists', category='error')
+            return redirect('/create_user')
+        
         cursor.execute('''
         INSERT INTO users
         VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -365,7 +371,18 @@ def create_user():
         connection.close()
     # END if
 
-    return render_template('create_user.html')
+    connection = get_db_conn()
+    cursor = connection.cursor()
+
+    cursor.execute('''SELECT DepartmentID, Name FROM department;''')
+    records = cursor.fetchall()
+    department_list = []
+    for department in records:
+        department_list.append((department[0]) + ' - ' + (department[1]))
+
+    cursor.close()
+
+    return render_template('create_user.html', department_list=department_list)
 # END create_user
 
 @login_required
@@ -471,6 +488,12 @@ def register_fdo():
 
         connection = get_db_conn()
         cursor = connection.cursor()
+
+        cursor.execute('''SELECT * FROM patient WHERE SSN = %s;''', (ssn,))
+        record = cursor.fetchone()
+        if record != None:
+            flash('Patient already registered', category='error')
+            return redirect('/register_fdo')
 
         cursor.execute('''
         INSERT INTO patient

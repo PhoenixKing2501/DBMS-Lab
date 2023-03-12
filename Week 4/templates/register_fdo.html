@@ -109,6 +109,16 @@
                         </div>
                     </div>
 
+                    <p style="color:red;">
+                      {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                              {{ message }}
+                            {% endfor %}
+                        {% endif %}
+                      {% endwith %}
+                    </p>
+
                     <div class="col-md-6 mb-3">
                       <label for="InsuranceID">InsuranceID <span class="text-muted">(Optional)</span></label>
                       <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="InsuranceID" name="insuranceID" placeholder="" value="">

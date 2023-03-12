@@ -109,6 +109,16 @@
                       </div>
                     </div>
                   </div>
+
+                  <p style="color:red;">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                          {% for message in messages %}
+                            {{ message }}
+                          {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </p>
       
                   <div class="mb-3">
                     <label for="username">SSN</label>
@@ -146,13 +156,41 @@
                               Position is required.
                             </div>
                           </div>
-                          <div class="col-md-6 mb-3">
+                          <!-- <div class="prime"> -->
+                            <!-- <div class="col-md-6 mb-3">
+                              <label for="patient">Position</label>
+                              <select class="custom-select d-block w-100" id="PosDep" name="position">
+                                <option value="">Choose...</option>
+                                {% for stuff in position_list %}
+                                    <option>{{ stuff }}</option>
+                                {% endfor %}
+                              </select>
+                              <div class="invalid-feedback">
+                                Please select a position.
+                              </div>
+                            </div> -->
+                          <!-- </div> -->
+                          <!-- <div class="col-md-6 mb-3">
                             <label for="DepartmentID">Department</label>
                             <input type="text" class="form-control" id="PosDep" name="departmentID" placeholder="" value="">
                             <div class="invalid-feedback">
                               Department name is required.
                             </div>
-                          </div>
+                          </div> -->
+                          <!-- <div class="prime"> -->
+                            <div class="col-md-6 mb-3">
+                              <label for="patient">Department</label>
+                              <select class="custom-select d-block w-100" id="PosDep" name="departmentID">
+                                <option value="">Choose...</option>
+                                {% for stuff in dep_list %}
+                                    <option>{{ stuff }}</option>
+                                {% endfor %}
+                              </select>
+                              <div class="invalid-feedback">
+                                Please select a department.
+                              </div>
+                            </div>
+                          <!-- </div> -->
                         </div>
                       </div>
                     </div>

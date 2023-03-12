@@ -108,6 +108,6 @@ CREATE TABLE IF NOT EXISTS users (
     EmployeeType    TEXT        NOT NULL,
     SSN             INT         UNIQUE NOT NULL,
     Address         TEXT        NOT NULL,
-    Email           TEXT,
+    Email           TEXT        NOT NULL,
     Password        TEXT        NOT NULL
 );
