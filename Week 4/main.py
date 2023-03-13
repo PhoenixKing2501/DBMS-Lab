@@ -182,6 +182,14 @@ def entry_doc():
             if appointmentID == '':
                 appointmentID = None
 
+            # check if appointmentID is valid
+            if appointmentID is not None:
+                cursor.execute('''SELECT * FROM appointment WHERE AppointmentID = %s;''', (appointmentID,))
+                record = cursor.fetchone()
+                if record is None:
+                    flash('Invalid Appointment ID')
+                    return redirect('/entry_doc')
+
             # insert into prescribes
             cursor.execute('''
             INSERT INTO prescribes
@@ -312,6 +320,7 @@ def create_user():
         if employeeType == 'doctor':
             position = request.form['position']
             departmentID = request.form['departmentID']
+            departmentID = departmentID.split(' - ')[0]
         email = request.form['email']
         address = request.form['address']
         country = request.form['country']
@@ -326,14 +335,18 @@ def create_user():
 
         address = address + ', ' + state + ', ' + country + ', ' + pin
 
-        if email == '':
-            email = None
         
         # insert into users
         cursor.execute('''SELECT * FROM users WHERE EmployeeID = %s;''', (employeeID,))
         record = cursor.fetchone()
         if record != None:
             flash('Employee ID already exists', category='error')
+            return redirect('/create_user')
+        
+        cursor.execute('''SELECT * FROM users WHERE SSN = %s;''', (ssn,))
+        record = cursor.fetchone()
+        if record != None:
+            flash('SSN already exists', category='error')
             return redirect('/create_user')
         
         cursor.execute('''
@@ -348,7 +361,7 @@ def create_user():
             # insert into doctor
 
             cursor.execute('''
-            INSERT INTO doctor
+            INSERT INTO physician
             VALUES (%s, %s, %s)
             ''', 
             (employeeID, name, position)
@@ -382,7 +395,7 @@ def create_user():
 
     cursor.close()
 
-    return render_template('create_user.html', department_list=department_list)
+    return render_template('create_user.html', dep_list=department_list)
 # END create_user
 
 @login_required
@@ -712,6 +725,14 @@ def entry_deo():
             if appointmentID == '':
                 appointmentID = None
 
+            # check if appointmentID is valid
+            if appointmentID is not None:
+                cursor.execute('''SELECT * FROM appointment WHERE AppointmentID = %s;''', (appointmentID,))
+                record = cursor.fetchone()
+                if record is None:
+                    flash('Invalid Appointment ID')
+                    return redirect('/entry_deo')
+
             # insert into prescribes
             cursor.execute('''
             INSERT INTO prescribes
@@ -768,7 +789,7 @@ def entry_deo():
 
             
             # check if appointment is available
-            cursor.execute('''SELECT COUNT(*) FROM appointment WHERE "Start" < %s AND "End" > %s;''', (end, start))
+            cursor.execute('''SELECT COUNT(*) FROM appointment WHERE "Start" <= %s AND "End" >= %s;''', (end, start))
             record = cursor.fetchone()
             if record[0] > 0 or start < datetime.now().strftime('%Y-%m-%d %H:%M:%S'):
                 flash('Appointment not available',category='error')
