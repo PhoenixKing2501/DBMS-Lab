@@ -8,7 +8,7 @@ OPT_OBJ = .\obj\opt\buffer_pool_manager.obj \
 		  .\obj\opt\clock_replacer.obj \
 		  .\obj\opt\lru_replacer \
 		  .\obj\opt\main.obj
-OPT_OBJ = .\obj\debug\buffer_pool_manager.obj \
+DEV_OBJ = .\obj\debug\buffer_pool_manager.obj \
 		  .\obj\debug\clock_replacer.obj \
 		  .\obj\debug\lru_replacer \
 		  .\obj\debug\main.obj
