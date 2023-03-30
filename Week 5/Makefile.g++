@@ -1,0 +1,27 @@
+FLAGS   = -fdiagnostics-color -std=c++20 -permissive
+DEV     = $(FLAGS) -g
+OPT     = $(FLAGS) -O6
+WARNING = -Wall
+DEFINES = -D _USE_MATH_DEFINES
+
+run: build
+	./bin/opt/main < in.txt > out.dat 2> err.txt
+
+run_dev: build_dev
+	./bin/debug/main < in.txt > out.dat 2> err.txt
+
+build: ./bin/opt/main
+
+build_dev: ./bin/debug/main
+
+check: main.cpp
+	CL main.cpp $(FLAGS) $(WARNING) $(DEFINES) /Zs
+
+./bin/opt/main: main.cpp
+	CL main.cpp $(OPT) $(WARNING) $(DEFINES) /Fe./bin/opt/main /Fo./bin/opt/main.obj
+
+./bin/debug/main: main.cpp
+	CL main.cpp $(DEV) $(WARNING) $(DEFINES) /Fe./bin/debug/main /Fo./bin/debug/main.obj
+
+clean:
+	-rm ./bin/opt/* ./bin/dev/*
