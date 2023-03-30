@@ -1,0 +1,42 @@
+INC     = /I C:\Users\utsav\source\include /I .\include
+FLAGS   = /EHsc /nologo /diagnostics:caret /std:c++20 /utf-8 /permissive /Zc:wchar_t $(INC)
+DEV     = $(FLAGS) /Zi /fsanitize=address
+OPT     = $(FLAGS) /Ox /O2 /Ot /favor:INTEL64
+WARNING = /W2 /WL
+DEFINES = /D _USE_MATH_DEFINES /D _UNICODE /D UNICODE
+OPT_OBJ = .\obj\opt\buffer_pool_manager.obj \
+		  .\obj\opt\clock_replacer.obj \
+		  .\obj\opt\lru_replacer \
+		  .\obj\opt\main.obj
+OPT_OBJ = .\obj\debug\buffer_pool_manager.obj \
+		  .\obj\debug\clock_replacer.obj \
+		  .\obj\debug\lru_replacer \
+		  .\obj\debug\main.obj
+
+run: build
+	.\bin\opt\main.exe
+
+run_dev: build_dev
+	.\bin\debug\main.exe
+
+build: .\bin\opt\main.exe
+
+build_dev: .\bin\debug\main.exe
+
+check:
+	CL .\src\*.cpp $(FLAGS) $(WARNING) $(DEFINES) /Zs
+
+.\bin\opt\main.exe: .\include\*.hpp $(OPT_OBJ)
+	CL $(OPT_OBJ) $(OPT) $(WARNING) $(DEFINES) /Fe.\bin\opt\main.exe
+
+.\bin\debug\main.exe: .\include\*.hpp $(DEV_OBJ)
+	CL $(DEV_OBJ) $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\main.exe
+	
+{.\src\}.cpp{.\obj\debug\}.obj:
+	CL $< $(DEV) $(WARNING) $(DEFINES) /c /Fo$@
+
+{.\src\}.cpp{.\obj\opt\}.obj:
+	CL $< $(OPT) $(WARNING) $(DEFINES) /c /Fo$@
+
+clean:
+	-DEL .\bin\opt\* .\bin\debug\* .\obj\opt\* .\obj\debug\* *.pdb /Q /F
