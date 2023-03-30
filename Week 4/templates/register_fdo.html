@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Regitration</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/dashboard/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.0/examples/dashboard/dashboard.css" rel="stylesheet">
+
+    <script>
+      function myFunction() {
+      alert("Data will now been submitted");
+      }
+    </script>
+
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Front Desk Operator</a>
+      <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="{{ url_for('logout') }}">Sign out</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard_fdo') }}">
+                  <span data-feather="home"></span>
+                  Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('profile_fdo') }}">
+                  <span data-feather="user"></span>
+                  Profile
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('changepassword') }}">
+                  <span data-feather="user"></span>
+                  Change Password
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="#">
+                  <span data-feather="users"></span>
+                  Register <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admit_fdo') }}">
+                  <span data-feather="file"></span>
+                  Admit
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('discharge_fdo') }}">
+                  <span data-feather="shopping-cart"></span>
+                  Discharge
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Patient Registration</h1>
+          </div>
+
+          <div class="container">
+            <div class="row">
+              <div class="col-md-8 order-md-1">
+                <h4 class="mb-3">Enter Patient Details</h4>
+                <form class="needs-validation" method="post" onsubmit="myFunction()">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="Name">Name</label>
+                      <input type="text" class="form-control" id="Name" name="name" placeholder="" value="" required>
+                      <div class="invalid-feedback">
+                        Valid name is required.
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="username">SSN</label>
+                        <div class="input-group">
+                          <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="username" name="ssn" placeholder="Social Security Number" required>
+                          <div class="invalid-feedback" style="width: 100%;">
+                            Your SSN is required.
+                          </div>
+                        </div>
+                    </div>
+
+                    <p style="color:red;">
+                      {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                              {{ message }}
+                            {% endfor %}
+                        {% endif %}
+                      {% endwith %}
+                    </p>
+
+                    <div class="col-md-6 mb-3">
+                      <label for="InsuranceID">InsuranceID <span class="text-muted">(Optional)</span></label>
+                      <input type="text" pattern="[0-9]*" title="Please enter only numbers"class="form-control" id="InsuranceID" name="insuranceID" placeholder="" value="">
+                    </div>
+                  </div>
+      
+                  <div class="mb-3">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" pattern="[0-9]*" title="Please enter only numbers" class="form-control" id="phone" name="phone" required>
+                    <div class="invalid-feedback">
+                      Please enter your phone number.
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-5 mb-3">
+                      <label for="pcp">Primary Care Physician</label>
+                      <select class="custom-select d-block w-100" id="pcp" name="pcp" required>
+                        <option value="">Choose...</option>
+                        {% for PCP in pcp_list %}
+                            <option>{{ PCP }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select a PCP.
+                      </div>
+                    </div>
+                  </div>
+                  
+      
+                  <div class="mb-3">
+                    <label for="address">Current Address</label>
+                    <input type="text" class="form-control" id="address" name="address" placeholder="1234 Main St" required>
+                    <div class="invalid-feedback">
+                      Please enter your shipping address.
+                    </div>
+                  </div>
+      
+                  <div class="row">
+                    <div class="col-md-5 mb-3">
+                      <label for="country">Country</label>
+                      <select class="custom-select d-block w-100" id="country" name="country" required>
+                        <option value="">Choose...</option>
+                        <option>India</option>
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select a valid country.
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label for="state">State</label>
+                      <select class="custom-select d-block w-100" id="state" name="state" required>
+                        <option value="">Choose...</option>
+                        <option>West Bengal</option>
+                      </select>
+                      <div class="invalid-feedback">
+                        Please provide a valid state.
+                      </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                      <label for="zip">Pin</label>
+                      <input type="text" class="form-control" id="zip" name="pin" placeholder="" required>
+                      <div class="invalid-feedback">
+                        Pin code required.
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <hr class="mb-4">
+                  <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="return confirm('Are you sure you want to submit?');">Register Patient</button>
+                </form>
+              </div>
+            </div>
+      
+            <footer class="my-5 pt-5 text-muted text-center text-small">
+              <p class="mb-1">&copy; DBMS Spr'22-23</p>
+              <!-- <ul class="list-inline">
+                <li class="list-inline-item"><a href="#">Privacy</a></li>
+                <li class="list-inline-item"><a href="#">Terms</a></li>
+                <li class="list-inline-item"><a href="#">Support</a></li>
+              </ul> -->
+            </footer>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://getbootstrap.com/docs/4.0/assets/js/vendor/popper.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+    <!-- Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.1/dist/Chart.min.js"></script>
+    <script>
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          datasets: [{
+            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: false
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
