@@ -1,6 +1,6 @@
 INC     = /I C:\Users\utsav\source\include /I .\include
 FLAGS   = /EHsc /nologo /diagnostics:caret /std:c++20 /utf-8 /permissive /Zc:wchar_t $(INC)
-DEV     = $(FLAGS) /Zi /fsanitize=address
+DEV     = $(FLAGS) /Zi /ZI /fsanitize=address
 OPT     = $(FLAGS) /Ox /O2 /Ot /favor:INTEL64
 WARNING = /W2 /WL
 DEFINES = /D _USE_MATH_DEFINES /D _UNICODE /D UNICODE
