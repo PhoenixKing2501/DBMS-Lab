@@ -39,7 +39,7 @@ check:
 	CL $< $(OPT) $(WARNING) $(DEFINES) /c /Fo$@
 
 .cpp.exe:
-	CL $< $(DEV) $(WARNING) $(DEFINES) /Fe$@
+	CL $< $(OPT) $(WARNING) $(DEFINES) /Fe$@
 	DEL $*.obj
 
 clean:
