@@ -20,7 +20,7 @@ struct Authors
 	char lname[30];
 };
 
-constexpr int a = sizeof(Books);
-constexpr int b = sizeof(Authors);
+// constexpr int a = sizeof(Books);
+// constexpr int b = sizeof(Authors);
 
 #endif // _TABLES_HPP_

@@ -9,7 +9,7 @@ struct Page
 {
 	static int32_t generateId;
 	int32_t id{};
-	char data[1024]{};
+	char data[512]{};
 
 	Page()
 	{
