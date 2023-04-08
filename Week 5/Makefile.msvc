@@ -38,5 +38,9 @@ check:
 {.\src\}.cpp{.\obj\opt\}.obj:
 	CL $< $(OPT) $(WARNING) $(DEFINES) /c /Fo$@
 
+.cpp.exe:
+	CL $< $(FLAGS) $(WARNING) $(DEFINES) /Fe$@
+	DEL $*.obj
+
 clean:
-	-DEL .\bin\opt\* .\bin\debug\* .\obj\opt\* .\obj\debug\* *.pdb /Q /F
+	-DEL .\bin\opt\* .\bin\debug\* .\obj\opt\* .\obj\debug\* *.pdb *.exe *.obj /Q /F
