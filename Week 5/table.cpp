@@ -45,6 +45,9 @@ Table readCSV(
 
 int main()
 {
+	std::cout << "Size of Books: " << sizeof(Books) << '\n';
+	std::cout << "Size of Authors: " << sizeof(Authors) << '\n';
+
 	try
 	{
 		auto data = readCSV("./files/books.csv");
@@ -72,7 +75,7 @@ int main()
 
 		// Read books.csv
 
-		data = readCSV("./files/author.csv");
+		data = readCSV("./files/authors.csv");
 
 		std::vector<Authors> authors{};
 
@@ -86,7 +89,7 @@ int main()
 			authors.emplace_back(author);
 		}
 
-		file.open("./files/author.bin", std::ios::binary);
+		file.open("./files/authors.bin", std::ios::binary);
 
 		for (const auto &author : authors)
 		{

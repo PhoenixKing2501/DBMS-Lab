@@ -9,15 +9,18 @@ struct Books
 {
 	int32_t id;
 	int32_t author_id;
-	char title[50];
-	char type[50];
+	char title[28];
+	char type[28];
 };
 
 struct Authors
 {
 	int32_t id;
-	char fname[50];
-	char lname[50];
+	char fname[30];
+	char lname[30];
 };
+
+constexpr int a = sizeof(Books);
+constexpr int b = sizeof(Authors);
 
 #endif // _TABLES_HPP_
