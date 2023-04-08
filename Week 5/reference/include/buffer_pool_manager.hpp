@@ -114,7 +114,7 @@ class BufferPoolManager {
    * If FetchPageRead or FetchPageWrite is called, it is expected that
    * the returned page already has a read or write latch held, respectively.
    *
-   * @param page_id, the id of the page to fetch
+   * @param page_id the id of the page to fetch
    * @return PageGuard holding the fetched page
    */
   auto FetchPageBasic(page_id_t page_id) -> BasicPageGuard;
