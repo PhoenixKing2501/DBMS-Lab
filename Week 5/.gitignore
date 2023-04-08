@@ -1,6 +1,7 @@
 /.vscode/
 /obj/
 /bin/
+/files/*.bin
 *.obj
 *.exe
 *.pdb
