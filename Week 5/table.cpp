@@ -13,6 +13,7 @@ Table readCSV(
 	char delim = ',')
 {
 	std::ifstream file{filename};
+
 	std::istringstream sstr{};
 	Table data{};
 
@@ -44,14 +45,12 @@ Table readCSV(
 
 int main()
 {
-	// Read authors.csv
 	try
 	{
-		auto &&data = readCSV("files/author.csv");
-
+		auto data = readCSV("./files/books.csv");
 		std::vector<Books> books{};
 
-		for (const auto &row : data)
+		for (auto &&row : data)
 		{
 			Books book{};
 			book.id = std::stoi(row[0]);
@@ -62,7 +61,7 @@ int main()
 			books.emplace_back(book);
 		}
 
-		std::ofstream file{"files/author.bin", std::ios::binary};
+		std::ofstream file{"./files/books.bin", std::ios::binary};
 
 		for (const auto &book : books)
 		{
@@ -73,7 +72,7 @@ int main()
 
 		// Read books.csv
 
-		data = readCSV("files/books.csv");
+		data = readCSV("./files/author.csv");
 
 		std::vector<Authors> authors{};
 
@@ -87,7 +86,7 @@ int main()
 			authors.emplace_back(author);
 		}
 
-		file.open("files/books.bin", std::ios::binary);
+		file.open("./files/author.bin", std::ios::binary);
 
 		for (const auto &author : authors)
 		{
