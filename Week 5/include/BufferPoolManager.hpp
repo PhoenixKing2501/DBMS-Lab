@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <numeric>
 #include <unordered_map>
 
@@ -19,8 +20,8 @@ struct BufferPoolManager
 {
 	struct Frame
 	{
-		Page page{};
-		bool is_pinned{false};
+		Page page{};		   // The page stored in the frame
+		bool is_pinned{false}; // Whether the page is pinned or not
 	};
 
 	struct
@@ -38,7 +39,7 @@ struct BufferPoolManager
 		auto push(frame_id_t frame_id) -> void { free_list[size++] = frame_id; }
 	} free_list{}; // The free list of frames in the buffer pool
 
-	std::array<Frame, N> pages{};							// The buffer pool
+	std::array<Frame, N> frames{};							// The buffer pool
 	std::unordered_map<page_id_t, frame_id_t> page_table{}; // page_id -> frame_id
 	PDiskManager disk_manager{nullptr};						// Don't delete these two... They should be deleted by the caller
 	PReplacer replacer{nullptr};							// Don't delete these two... They should be deleted by the caller
@@ -58,10 +59,9 @@ struct BufferPoolManager
 	/**
 	 * @brief Fetches a page from the buffer pool
 	 * @param page_id The page id to fetch
-	 * @param[out] page The page fetched
-	 * @return true if the page is fetched successfully, false otherwise
+	 * @return The page if the page is fetched successfully, std::nullopt otherwise
 	 */
-	auto fetch_page(page_id_t page_id, RPage page) -> bool;
+	auto fetch_page(page_id_t page_id) -> std::optional<CRPage>;
 
 	/**
 	 * @brief Unpins a page

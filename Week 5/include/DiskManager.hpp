@@ -29,7 +29,8 @@ struct DiskManager
 	 * @param page_id The page id to read from disk
 	 * @param[out] page_data The page data read from disk
 	 */
-	auto read(page_id_t page_id) -> std::optional<std::array<char, PAGE_SIZE>>;
+	auto read_page(page_id_t page_id)
+		-> std::optional<Page>;
 
 	/**
 	 * @brief Add pages from a file to the disk

@@ -15,12 +15,9 @@ struct Page
 	page_id_t id{};						// id of the page
 	std::array<char, PAGE_SIZE> data{}; // Stores the actual data
 
-	/**
-	 * @brief Creates a new Page. The page id is automatically generated.
-	 */
-	Page()
+	static auto generate_page_id() -> page_id_t
 	{
-		id = generateId++;
+		return generateId++;
 	}
 };
 
