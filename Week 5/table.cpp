@@ -64,6 +64,9 @@ int main()
 			books.emplace_back(book);
 		}
 
+		// add empty book to books as sentinel
+		books.emplace_back(Books{});
+
 		std::ofstream file{"./files/books.bin", std::ios::binary};
 
 		for (const auto &book : books)
@@ -88,6 +91,9 @@ int main()
 
 			authors.emplace_back(author);
 		}
+
+		// add empty author to authors as sentinel
+		authors.emplace_back(Authors{});
 
 		file.open("./files/authors.bin", std::ios::binary);
 

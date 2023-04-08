@@ -3,14 +3,17 @@
 #ifndef _PAGE_HPP_
 #define _PAGE_HPP_
 
+#include <array>
 #include <cstdint>
 
 using page_id_t = int32_t;
+constexpr size_t PAGE_SIZE = 512;
+
 struct Page
 {
-	static page_id_t generateId; // = 0; 
-	page_id_t id{}; // = generateId++;
-	char data[512]{}; // Stores the actual data
+	static page_id_t generateId;		// genrates the page id
+	page_id_t id{};						// id of the page
+	std::array<char, PAGE_SIZE> data{}; // Stores the actual data
 
 	/**
 	 * @brief Creates a new Page. The page id is automatically generated.
