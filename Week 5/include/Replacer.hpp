@@ -3,13 +3,20 @@
 #ifndef _REPLACER_HPP_
 #define _REPLACER_HPP_
 
+#include <array>
 #include <cstdint>
 #include <optional>
 
+#include "Frame.hpp"
 #include "Types.hpp"
 
+template <size_t N>
 struct Replacer
 {
+	std::array<Frame, N> *frames{nullptr};
+
+	Replacer() = default;
+
 	virtual ~Replacer() = default;
 
 	/**
@@ -36,9 +43,13 @@ struct Replacer
 	virtual size_t size() = 0;
 };
 
-using PReplacer = Replacer *;
-using CPReplacer = const Replacer *;
-using RReplacer = Replacer &;
-using CRReplacer = const Replacer &;
+template <size_t N>
+using PReplacer = Replacer<N> *;
+template <size_t N>
+using CPReplacer = const Replacer<N> *;
+template <size_t N>
+using RReplacer = Replacer<N> &;
+template <size_t N>
+using CRReplacer = const Replacer<N> &;
 
 #endif // _REPLACER_HPP_

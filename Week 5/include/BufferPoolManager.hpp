@@ -11,18 +11,13 @@
 #include "Types.hpp"
 
 #include "DiskManager.hpp"
+#include "Frame.hpp"
 #include "Page.hpp"
 #include "Replacer.hpp"
 
 template <size_t N = 10>
 struct BufferPoolManager
 {
-	struct Frame
-	{
-		Page page{};		   // The page stored in the frame
-		bool is_pinned{false}; // Whether the page is pinned or not
-	};
-
 	struct
 	{
 		std::array<frame_id_t, N> free_list{
@@ -41,14 +36,14 @@ struct BufferPoolManager
 	std::array<Frame, N> frames{};							// The buffer pool
 	std::unordered_map<page_id_t, frame_id_t> page_table{}; // page_id -> frame_id
 	PDiskManager disk_manager{nullptr};						// Don't delete these two... They should be deleted by the caller
-	PReplacer replacer{nullptr};							// Don't delete these two... They should be deleted by the caller
+	PReplacer<N> replacer{nullptr};							// Don't delete these two... They should be deleted by the caller
 
 	/**
 	 * @brief Creates a new BufferPoolManager
 	 * @param disk_manager disk manager instance
 	 * @param replacer replacer instance
 	 */
-	explicit BufferPoolManager(PDiskManager disk_manager, PReplacer replacer);
+	explicit BufferPoolManager(PDiskManager disk_manager, PReplacer<N> replacer);
 
 	/**
 	 * @brief Destroys the BufferPoolManager

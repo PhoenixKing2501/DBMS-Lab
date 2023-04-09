@@ -2,7 +2,7 @@
 
 template <size_t N>
 BufferPoolManager<N>::BufferPoolManager(
-	PDiskManager _disk_manager, PReplacer _replacer)
+	PDiskManager _disk_manager, PReplacer<N> _replacer)
 	: disk_manager{_disk_manager}, replacer{_replacer} {}
 
 template <size_t N>
