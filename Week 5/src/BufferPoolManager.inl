@@ -16,7 +16,8 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 		auto &frame = frames[frame_id];
 		replacer->pin(frame_id);
 		std::fprintf(stderr, "Hit page %u\n", page_id);
-		std::fprintf(stderr, "Pinning Page %u Pin Count %hu\n", page_id, frame.pin_count);
+		std::fprintf(stderr, "Pinning Page %u Frame %u Pin Count %hu\n",
+					 page_id, frame_id, frame.pin_count);
 		return frame.page;
 	}
 
@@ -29,21 +30,17 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 			return std::nullopt;
 		}
 		auto &frame = frames[frame_id.value()];
-		// if (frame.is_pinned)
-		if (frame.pin_count > 0)
-		{
-			return std::nullopt;
-		}
 
 		page_table.erase(frame.page.id);
-		std::fprintf(stderr, "Evicting page %d\n", frame.page.id);
+		std::fprintf(stderr, "Evicting page %d from Frame %u\n",
+					 frame.page.id, frame_id.value());
 
 		free_list.push(frame_id.value());
 	}
 
 	// Fetch the page from the disk
 	auto page = disk_manager->read_page(page_id);
-	if (!page.has_value())
+	if (not page.has_value())
 	{
 		return std::nullopt;
 	}
@@ -52,8 +49,9 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 	auto &frame = frames[frame_id];
 	frame.page = page.value();
 	replacer->pin(frame_id);
-	std::fprintf(stderr, "Fetching page %u\n", page_id);
-	std::fprintf(stderr, "Pinning Page %u Pin Count %hu\n", page_id, frame.pin_count);
+	std::fprintf(stderr, "Fetching page %u to Frame %u\n", page_id, frame_id);
+	std::fprintf(stderr, "Pinning Page %u Frame %u Pin Count %hu\n",
+				 page_id, frame_id, frame.pin_count);
 	page_table[page_id] = frame_id;
 
 	return frame.page;
@@ -67,7 +65,8 @@ auto BufferPoolManager<N>::unpin_page(page_id_t page_id) -> bool
 		auto frame_id = it->second;
 		auto &frame = frames[frame_id];
 		replacer->unpin(frame_id);
-		std::fprintf(stderr, "Unpinning page %u Pin Count %hu\n", page_id, frame.pin_count);
+		std::fprintf(stderr, "Unpinning page %u Frame %hu Pin Count %hu\n",
+					 page_id, frame_id, frame.pin_count);
 		return true;
 	}
 	return false;

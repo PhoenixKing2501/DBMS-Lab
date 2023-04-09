@@ -35,11 +35,6 @@ struct Replacer
 	 * @param frame_id the id of the frame to unpin
 	 */
 	virtual auto unpin(frame_id_t frame_id) -> void = 0;
-
-	/**
-	 * @return the number of elements in the replacer that can be victimized
-	 */
-	virtual auto size() -> size_t = 0;
 };
 
 template <size_t N>

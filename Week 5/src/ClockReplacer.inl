@@ -1,9 +1,7 @@
-#include "ClockReplacer.hpp"
-
 #include <algorithm>
 
 template <size_t N>
-auto ClockReplacer<N>::victim() -> std::optional<frame_id_t>
+auto ClockReplacer<N>::victim()	-> std::optional<frame_id_t>
 {
 	if (not this->frames)
 	{
@@ -61,22 +59,4 @@ auto ClockReplacer<N>::unpin(frame_id_t frame_id) -> void
 		// (*this->frames)[frame_id].is_pinned = false;
 		(*this->frames)[frame_id].pin_count--;
 	}
-}
-
-template <size_t N>
-auto ClockReplacer<N>::size() -> size_t
-{
-	if (not this->frames)
-	{
-		return 0;
-	}
-
-	return std::count_if(
-		this->frames->begin(),
-		this->frames->end(),
-		[](CRFrame frame)
-		{
-			// return not frame.is_pinned;
-			return frame.pin_count == 0;
-		});
 }

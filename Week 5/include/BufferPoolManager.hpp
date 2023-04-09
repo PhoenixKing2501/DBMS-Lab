@@ -27,9 +27,19 @@ struct BufferPoolManager
 				std::iota(std::begin(free_list), std::end(free_list), 0);
 				return free_list;
 			}()};
+
 		size_t size{N};
 
+		/**
+		 * @brief Pop a frame from the free list
+		 * @return The frame id
+		 */
 		auto pop() -> frame_id_t { return free_list[--size]; }
+
+		/**
+		 * @brief Push a frame to the free list
+		 * @param frame_id The frame id to push
+		 */
 		auto push(frame_id_t frame_id) -> void { free_list[size++] = frame_id; }
 	} free_list{}; // The free list of frames in the buffer pool
 

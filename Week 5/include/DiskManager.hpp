@@ -30,7 +30,7 @@ struct DiskManager
 	/**
 	 * @brief Read a page from disk
 	 * @param page_id The page id to read from disk
-	 * @param[out] page_data The page data read from disk
+	 * @return The page, std::nullopt if the page does not exist
 	 */
 	auto read_page(page_id_t page_id)
 		-> std::optional<Page>;

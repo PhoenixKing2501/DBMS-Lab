@@ -31,11 +31,6 @@ struct ClockReplacer : public Replacer<N>
 	 * @param frame_id the id of the frame to unpin
 	 */
 	auto unpin(frame_id_t frame_id) -> void override;
-
-	/**
-	 * @return the number of elements in the replacer that can be victimized
-	 */
-	auto size() -> size_t override;
 };
 
 #include "ClockReplacer.inl"

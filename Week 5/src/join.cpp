@@ -20,7 +20,9 @@
 using namespace std::literals;
 
 #include "BufferPoolManager.hpp"
-#include "ClockReplacer.hpp"
+// #include "ClockReplacer.hpp"
+#include "LRUReplacer.hpp"
+// #include "MRUReplacer.hpp"
 #include "DiskManager.hpp"
 #include "Types.hpp"
 
@@ -37,7 +39,8 @@ auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
 int main()
 {
 	DiskManager disk_manager{};
-	auto replacer = ClockReplacer<BUFFERSIZE>{};
+	// auto replacer = ClockReplacer<BUFFERSIZE>{};
+	auto replacer = LRUReplacer<BUFFERSIZE>{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
 	auto _book_pages = disk_manager.add_page("./files/books.bin");
