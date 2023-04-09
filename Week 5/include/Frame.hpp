@@ -11,4 +11,9 @@ struct Frame
 	bool is_pinned{false}; // Whether the page is pinned or not
 };
 
+using PFrame = Frame *;
+using CPFrame = const Frame *;
+using RFrame = Frame &;
+using CRFrame = const Frame &;
+
 #endif // _FRAME_HPP_

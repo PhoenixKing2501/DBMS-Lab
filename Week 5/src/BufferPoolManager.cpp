@@ -9,7 +9,7 @@ template <size_t N>
 auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<CRPage>
 {
 	// If the page is already in the buffer pool, return it
-	if (auto it = page_table.find(page_id); it != page_table.end())
+	if (auto it = page_table.find(page_id); it != std::end(page_table))
 	{
 		auto frame_id = it->second;
 		auto &frame = frames[frame_id];
