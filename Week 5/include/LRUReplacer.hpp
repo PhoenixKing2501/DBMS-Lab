@@ -4,6 +4,7 @@
 #define _LRU_REPLACER_HPP_
 
 #include <list>
+#include <optional>
 #include <unordered_map>
 
 #include "Replacer.hpp"
