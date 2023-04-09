@@ -26,6 +26,12 @@ using namespace std::literals;
 
 constexpr size_t BUFFERSIZE = 32;
 
+template <typename T>
+auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
+{
+	return reinterpret_cast<std::array<T, PAGE_SIZE / sizeof(T)> *>(&page.data);
+};
+
 int main()
 {
 	DiskManager disk_manager{};
@@ -72,8 +78,7 @@ int main()
 	{
 		auto page = fetch_page(company_page_id);
 
-		auto companys = *reinterpret_cast<
-			std::array<Company, PAGE_SIZE / sizeof(Company)> *>(&page.data);
+		auto companys = *page_to_array<Company>(page);
 
 		for (auto &company : companys)
 		{
@@ -84,8 +89,7 @@ int main()
 			{
 				auto page = fetch_page(employee_page_id);
 
-				auto employees = *reinterpret_cast<
-					std::array<Employee, PAGE_SIZE / sizeof(Employee)> *>(&page.data);
+				auto employees = *page_to_array<Employee>(page);
 
 				for (auto &employee : employees)
 				{

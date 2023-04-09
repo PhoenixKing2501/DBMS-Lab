@@ -17,9 +17,8 @@
 
 struct DiskManager
 {
-	std::unordered_map<page_id_t, Page>
-		pages{};		// The pages on the disk
-	int64_t num_ios{0}; // The number of I/Os
+	std::unordered_map<page_id_t, Page> pages{}; // The pages on the disk
+	int64_t num_ios{0};							 // The number of I/Os
 
 	DiskManager() = default;
 	~DiskManager() = default;
@@ -38,15 +37,10 @@ struct DiskManager
 	/**
 	 * @brief Add pages from a file to the disk
 	 * @param filename The filename to read from
+	 * @return The page ids of the pages added, std::nullopt if the file does not exist
 	 */
 	auto add_page(const std::string &filename)
 		-> std::optional<std::vector<frame_id_t>>;
-
-	/**
-	 * 
-	*/
-	auto add_page(size_t num)
-		-> std::vector<frame_id_t>;
 };
 
 using PDiskManager = DiskManager *;

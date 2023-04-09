@@ -61,7 +61,7 @@ struct BufferPoolManager
 	~BufferPoolManager() = default;
 
 	/**
-	 * @brief Fetches a page from the buffer pool
+	 * @brief Fetches a page from the buffer pool, and pins it
 	 * @param page_id The page id to fetch
 	 * @return The page if the page is fetched successfully, std::nullopt otherwise
 	 */
