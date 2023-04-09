@@ -42,7 +42,7 @@ int main()
 		}
 
 		auto books = *reinterpret_cast<
-			std::array<Books, page->data.size() / sizeof(Books)> *>(&page->data);
+			std::array<Books, PAGE_SIZE / sizeof(Books)> *>(&page->data);
 
 		for (auto &book : books)
 		{
@@ -80,7 +80,7 @@ int main()
 		}
 
 		auto authors = *reinterpret_cast<
-			std::array<Authors, page->data.size() / sizeof(Authors)> *>(page->data.data());
+			std::array<Authors, PAGE_SIZE / sizeof(Authors)> *>(page->data.data());
 		for (auto &&author : authors)
 		{
 			if (author == Authors{})

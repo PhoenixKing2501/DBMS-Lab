@@ -41,6 +41,12 @@ struct DiskManager
 	 */
 	auto add_page(const std::string &filename)
 		-> std::optional<std::vector<frame_id_t>>;
+
+	/**
+	 * 
+	*/
+	auto add_page(size_t num)
+		-> std::vector<frame_id_t>;
 };
 
 using PDiskManager = DiskManager *;

@@ -18,6 +18,7 @@ using namespace std::literals;
 #include "BufferPoolManager.hpp"
 #include "ClockReplacer.hpp"
 #include "DiskManager.hpp"
+#include "Types.hpp"
 
 #include "Tables.hpp"
 
@@ -68,7 +69,7 @@ int main()
 		auto page = fetch_page(book_page_id);
 
 		auto books = *reinterpret_cast<
-			std::array<Books, page.data.size() / sizeof(Books)> *>(&page.data);
+			std::array<Books, PAGE_SIZE / sizeof(Books)> *>(&page.data);
 
 		for (auto &book : books)
 		{
@@ -77,10 +78,10 @@ int main()
 
 			for (auto author_page_id : author_pages)
 			{
-				auto author_page = fetch_page(author_page_id);
+				auto page = fetch_page(author_page_id);
 
 				auto authors = *reinterpret_cast<
-					std::array<Authors, author_page.data.size() / sizeof(Authors)> *>(&author_page.data);
+					std::array<Authors, PAGE_SIZE / sizeof(Authors)> *>(&page.data);
 
 				for (auto &author : authors)
 				{
