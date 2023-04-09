@@ -93,7 +93,7 @@ int main()
 						break;
 
 					// Select Condition
-					if (company.id == employee.company_id )
+					if (company.id == employee.company_id)
 					{
 						std::cout << std::format("{:30}\t{:30}\t{:50}\n",
 												 employee.fname.data(),
