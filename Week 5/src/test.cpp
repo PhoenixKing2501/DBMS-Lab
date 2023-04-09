@@ -11,7 +11,7 @@ using namespace std::literals;
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 2;
+constexpr size_t BUFFERSIZE = 256;
 
 int main()
 {
@@ -19,86 +19,86 @@ int main()
 	ClockReplacer<BUFFERSIZE> replacer{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
-	auto book_pages = disk_manager.add_page("./files/books.bin");
-	auto author_pages = disk_manager.add_page("./files/authors.bin");
+	auto employee_pages = disk_manager.add_page("./files/employee.bin");
+	auto company_pages = disk_manager.add_page("./files/company.bin");
 
-	if (not book_pages.has_value() or
-		not author_pages.has_value())
+	if (not employee_pages.has_value() or
+		not company_pages.has_value())
 	{
 		std::cerr << "Error opening file" << '\n';
 		return EXIT_FAILURE;
 	}
 
-	for (auto page_id : *book_pages)
+	for (auto page_id : *employee_pages)
 	{
-	fetch_book:
+	fetch_employee:
 		auto page = buffer_pool_manager.fetch_page(page_id);
 
 		if (not page.has_value())
 		{
 			std::cerr << "No Frame Free" << '\n';
-			std::this_thread::sleep_for(100ms);
-			goto fetch_book;
+			// std::this_thread::sleep_for(100ms);
+			goto fetch_employee;
 		}
 
-		auto books = *reinterpret_cast<
-			std::array<Books, PAGE_SIZE / sizeof(Books)> *>(&page->data);
+		auto employees = *reinterpret_cast<
+			std::array<Employee, PAGE_SIZE / sizeof(Employee)> *>(&page->data);
 
-		for (auto &book : books)
+		for (auto &employee : employees)
 		{
-			if (book == Books{})
+			if (employee == Employee{})
 				break;
 
-			std::this_thread::sleep_for(50ms);
+			// std::this_thread::sleep_for(50ms);
 
 			std::cout << std::format("{:3}\t{:3}\t{:20}\t{:20}\n",
-									 book.id,
-									 book.author_id,
-									 book.title.data(),
-									 book.type.data());
+									 employee.id,
+									 employee.company_id,
+									 employee.fname.data(),
+									 employee.lname.data());
 		}
 
 		std::thread t{[&buffer_pool_manager, page_id]()
 					  {
-						  std::this_thread::sleep_for(2s);
+						//   std::this_thread::sleep_for(2s);
 						  buffer_pool_manager.unpin_page(page_id);
-						  std::cerr << "Unpinning page " << page_id << std::endl;
+						//   std::cerr << "Unpinning page " << page_id << std::endl;
 					  }};
 		t.detach();
 	}
 
-	for (auto page_id : *author_pages)
+	for (auto page_id : *company_pages)
 	{
-	fetch_author:
+	fetch_company:
 		auto page = buffer_pool_manager.fetch_page(page_id);
 
 		if (not page.has_value())
 		{
 			std::cerr << "No Frame Free" << '\n';
-			std::this_thread::sleep_for(100ms);
-			goto fetch_author;
+			// std::this_thread::sleep_for(100ms);
+			goto fetch_company;
 		}
 
-		auto authors = *reinterpret_cast<
-			std::array<Authors, PAGE_SIZE / sizeof(Authors)> *>(page->data.data());
-		for (auto &&author : authors)
+		auto companys = *reinterpret_cast<
+			std::array<Company, PAGE_SIZE / sizeof(Company)> *>(page->data.data());
+		for (auto &&company : companys)
 		{
-			if (author == Authors{})
+			if (company == Company{})
 				break;
 
-			std::this_thread::sleep_for(50ms);
+			// std::this_thread::sleep_for(50ms);
 
 			std::cout << std::format("{:3}\t{:20}\t{:20}\n",
-									 author.id,
-									 author.fname.data(),
-									 author.lname.data());
+									 company.id,
+									 company.name.data(),
+									 company.slogan.data());
 		}
 
 		std::thread t{[&buffer_pool_manager, page_id]()
 					  {
-						  std::this_thread::sleep_for(2s);
+						//   std::this_thread::sleep_for(2s);
 						  buffer_pool_manager.unpin_page(page_id);
-						  std::cerr << "Unpinning page " << page_id << std::endl;
+						//   std::cerr << "Unpinning page " << page_id << std::endl;
 					  }};
 		t.detach();
 	}

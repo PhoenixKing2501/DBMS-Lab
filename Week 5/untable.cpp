@@ -8,7 +8,7 @@ int main()
 {
 	try
 	{
-		std::ifstream file{"./files/books.bin", std::ios::binary};
+		std::ifstream file{"./files/employee.bin", std::ios::binary};
 
 		if (!file.is_open())
 		{
@@ -16,21 +16,21 @@ int main()
 			return 1;
 		}
 
-		Books book{};
+		Employee employee{};
 
-		while (file.read(reinterpret_cast<char *>(&book), sizeof(Books)))
+		while (file.read(reinterpret_cast<char *>(&employee), sizeof(Employee)))
 		{
 			std::cout << std::format("{:3}\t{:3}\t{:20}\t{:20}\n",
-									 book.id,
-									 book.author_id,
-									 book.title.data(),
-									 book.type.data());
+									 employee.id,
+									 employee.company_id,
+									 employee.fname.data(),
+									 employee.lname.data());
 		}
 
 		file.close();
 		file.clear();
 
-		file.open("./files/authors.bin", std::ios::binary);
+		file.open("./files/company.bin", std::ios::binary);
 
 		if (!file.is_open())
 		{
@@ -38,21 +38,20 @@ int main()
 			return 1;
 		}
 
-		Authors author{};
+		Company company{};
 
-		while (file.read(reinterpret_cast<char *>(&author), sizeof(Authors)))
+		while (file.read(reinterpret_cast<char *>(&company), sizeof(Company)))
 		{
 			std::cout << std::format("{:3}\t{:20}\t{:20}\n",
-									 author.id,
-									 author.fname.data(),
-									 author.lname.data());
+									 company.id,
+									 company.name.data(),
+									 company.slogan.data());
 		}
 
 		file.close();
 	}
-	catch(const std::exception& e)
+	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	
 }

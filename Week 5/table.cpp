@@ -46,68 +46,68 @@ Table readCSV(
 
 int main()
 {
-	std::cout << "Size of Books: " << sizeof(Books) << '\n';
-	std::cout << "Size of Authors: " << sizeof(Authors) << '\n';
+	std::cout << "Size of Employee: " << sizeof(Employee) << '\n';
+	std::cout << "Size of Company:  " << sizeof(Company) << '\n';
 
 	try
 	{
-		auto data = readCSV("./files/books.csv");
-		std::vector<Books> books{};
+		auto data = readCSV("./files/employee.csv");
+		std::vector<Employee> employees{};
 
 		for (auto &&row : data)
 		{
-			Books book{};
-			book.id = std::stoi(row[0]);
-			std::strcpy(book.title.data(), row[1].c_str());
-			std::strcpy(book.type.data(), row[2].c_str());
-			book.author_id = std::stoi(row[3]);
+			Employee employee{};
+			employee.id = std::stoi(row[0]);
+			std::strcpy(employee.fname.data(), row[1].c_str());
+			std::strcpy(employee.lname.data(), row[2].c_str());
+			employee.company_id = std::stoi(row[3]);
 
-			books.emplace_back(book);
+			employees.emplace_back(employee);
 		}
 
-		std::sort(std::begin(books), std::end(books),
-				  [](const Books &a, const Books &b)
+		std::sort(std::begin(employees), std::end(employees),
+				  [](const Employee &a, const Employee &b)
 				  {
-					  return a.author_id < b.author_id;
+					  return a.company_id < b.company_id;
 				  });
 
-		std::ofstream file{"./files/books.bin", std::ios::binary};
+		std::ofstream file{"./files/employee.bin", std::ios::binary};
 
-		for (const auto &book : books)
+		for (const auto &employee : employees)
 		{
-			file.write(reinterpret_cast<const char *>(&book), sizeof(Books));
+			file.write(reinterpret_cast<const char *>(&employee), sizeof(Employee));
 		}
 
 		file.close();
 		file.clear();
 
-		// Read books.csv
+		// Read employees.csv
 
-		data = readCSV("./files/authors.csv");
+		data = readCSV("./files/company.csv");
 
-		std::vector<Authors> authors{};
+		std::vector<Company> companys{};
 
 		for (const auto &row : data)
 		{
-			Authors author{};
-			author.id = std::stoi(row[0]);
-			std::strcpy(author.fname.data(), row[1].c_str());
-			std::strcpy(author.lname.data(), row[2].c_str());
+			Company company{};
+			company.id = std::stoi(row[0]);
+			std::strcpy(company.name.data(), row[1].c_str());
+			std::strcpy(company.slogan.data(), row[2].c_str());
 
-			authors.emplace_back(author);
+			companys.emplace_back(company);
 		}
 
-		std::sort(std::begin(authors), std::end(authors),
-				  [](const Authors &a, const Authors &b)
+		std::sort(std::begin(companys), std::end(companys),
+				  [](const Company &a, const Company &b)
 				  {
 					  return a.id < b.id;
 				  });
 
-		file.open("./files/authors.bin", std::ios::binary);
+		file.open("./files/company.bin", std::ios::binary);
 
-		for (const auto &author : authors)
+		for (const auto &company : companys)
 		{
-			file.write(reinterpret_cast<const char *>(&author), sizeof(Authors));
+			file.write(reinterpret_cast<const char *>(&company), sizeof(Company));
 		}
 
 		file.close();

@@ -7,42 +7,42 @@
 #include <compare>
 #include <cstdint>
 
-struct Books
+struct Employee
 {
 	int32_t id;
-	int32_t author_id;
-	std::array<char, 28> title;
-	std::array<char, 28> type;
+	int32_t company_id;
+	std::array<char, 60> fname;
+	std::array<char, 60> lname;
 
-	friend auto operator==(const Books &lhs, const Books &rhs) -> bool
+	friend auto operator==(const Employee &lhs, const Employee &rhs) -> bool
 	{
 		return lhs.id == rhs.id;
 	}
 
-	friend auto operator<=>(const Books &lhs, const Books &rhs) -> std::strong_ordering
+	friend auto operator<=>(const Employee &lhs, const Employee &rhs) -> std::strong_ordering
 	{
 		return lhs.id <=> rhs.id;
 	}
 };
 
-struct Authors
+struct Company
 {
 	int32_t id;
-	std::array<char, 30> fname;
-	std::array<char, 30> lname;
+	std::array<char, 62> name;
+	std::array<char, 62> slogan;
 
-	friend auto operator==(const Authors &lhs, const Authors &rhs) -> bool
+	friend auto operator==(const Company &lhs, const Company &rhs) -> bool
 	{
 		return lhs.id == rhs.id;
 	}
 
-	friend auto operator<=>(const Authors &lhs, const Authors &rhs) -> std::strong_ordering
+	friend auto operator<=>(const Company &lhs, const Company &rhs) -> std::strong_ordering
 	{
 		return lhs.id <=> rhs.id;
 	}
 };
 
-constexpr int a = sizeof(Books);
-constexpr int b = sizeof(Authors);
+constexpr int a = sizeof(Employee);
+constexpr int b = sizeof(Company);
 
 #endif // _TABLES_HPP_

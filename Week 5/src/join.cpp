@@ -1,15 +1,13 @@
 /**
  * Simulation the following join operation:
  * SELECT
- * 		authors.first_name, authors.last_name, books.title
+ * 		employee.first_name, employee.last_name, company.fname
  * FROM
- * 		authors
+ * 		employee
  * INNER JOIN
- * 		books
+ * 		company
  * ON
- * 		authors.id = books.author_id
- * WHERE
- * 		books.type = 'original';
+ * 		employee.company_id = company.id
  */
 
 #include <chrono>
@@ -20,15 +18,15 @@
 using namespace std::literals;
 
 #include "BufferPoolManager.hpp"
-// #include "ClockReplacer.hpp"
+#include "ClockReplacer.hpp"
 // #include "LRUReplacer.hpp"
-#include "MRUReplacer.hpp"
+// #include "MRUReplacer.hpp"
 #include "DiskManager.hpp"
 #include "Types.hpp"
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 4;
+constexpr size_t BUFFERSIZE = 100;
 
 template <typename T>
 auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
@@ -39,13 +37,13 @@ auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
 int main()
 {
 	DiskManager disk_manager{};
-	// auto replacer = ClockReplacer<BUFFERSIZE>{};
+	auto replacer = ClockReplacer<BUFFERSIZE>{};
 	// auto replacer = LRUReplacer<BUFFERSIZE>{};
-	auto replacer = MRUReplacer<BUFFERSIZE>{};
+	// auto replacer = MRUReplacer<BUFFERSIZE>{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
-	auto _book_pages = disk_manager.add_page("./files/books.bin");
-	auto _author_pages = disk_manager.add_page("./files/authors.bin");
+	auto _company_pages = disk_manager.add_page("./files/company.bin");
+	auto _employee_pages = disk_manager.add_page("./files/employee.bin");
 
 	auto fetch_page = [&](page_id_t page_id) -> Page
 	{
@@ -65,91 +63,91 @@ int main()
 		buffer_pool_manager.unpin_page(page_id);
 	};
 
-	if (not _book_pages.has_value() or
-		not _author_pages.has_value())
+	if (not _company_pages.has_value() or
+		not _employee_pages.has_value())
 	{
 		fputs("Error opening file", stderr);
 		return EXIT_FAILURE;
 	}
 
-	auto book_pages = _book_pages->begin();
-	auto author_pages = _author_pages->begin();
+	auto company_pages = _company_pages->begin();
+	auto employee_pages = _employee_pages->begin();
 
-	std::cout << std::format("{:20}\t{:20}\t{:20}\n",
-							 "First Name", "Last Name", "Title");
+	std::cout << std::format("{:30}\t{:30}\t{:50}\n",
+							 "First Name", "Last Name", "Company Name");
 
 	// Merge-Join Algorithm
 
-	// Fetch the first page in the authors table
-	auto author_page = fetch_page(*author_pages);
+	// Fetch the first page in the employees table
+	auto employee_page = fetch_page(*employee_pages);
 
-	// Fetch the first page in the books table
-	auto book_page = fetch_page(*book_pages);
+	// Fetch the first page in the companys table
+	auto company_page = fetch_page(*company_pages);
 
-	// Get the first tuple of the authors table
-	auto author_tuple = page_to_array<Authors>(author_page)->begin();
+	// Get the first tuple of the employees table
+	auto employee_tuple = page_to_array<Employee>(employee_page)->begin();
 
-	// Get the first tuple of the books table
-	auto book_tuple = page_to_array<Books>(book_page)->begin();
+	// Get the first tuple of the companys table
+	auto company_tuple = page_to_array<Company>(company_page)->begin();
 
-	while (author_pages != _author_pages->end() or
-		   book_pages != _book_pages->end())
+	while (employee_pages != _employee_pages->end() or
+		   company_pages != _company_pages->end())
 	{
-		if (author_tuple->id < book_tuple->author_id)
+		if (company_tuple->id < employee_tuple->company_id)
 		{
-			++author_tuple;
+			++company_tuple;
 
-			if (author_tuple == page_to_array<Authors>(author_page)->end())
+			if (company_tuple == page_to_array<Company>(company_page)->end())
 			{
-				(std::thread{unpin_page, *author_pages}).detach();
-				++author_pages;
+				// (std::thread{unpin_page, *company_pages}).detach();
+				buffer_pool_manager.unpin_page(*company_pages);
+				++company_pages;
 
-				if (author_pages == _author_pages->end())
+				if (company_pages == _company_pages->end())
 					break;
 
-				author_page = fetch_page(*author_pages);
-				author_tuple = page_to_array<Authors>(author_page)->begin();
+				company_page = fetch_page(*company_pages);
+				company_tuple = page_to_array<Company>(company_page)->begin();
 			}
 		}
-		else if (author_tuple->id > book_tuple->author_id)
+		else if (company_tuple->id > employee_tuple->company_id)
 		{
-			++book_tuple;
+			++employee_tuple;
 
-			if (book_tuple == page_to_array<Books>(book_page)->end())
+			if (employee_tuple == page_to_array<Employee>(employee_page)->end())
 			{
-				(std::thread{unpin_page, *book_pages}).detach();
-				++book_pages;
+				// (std::thread{unpin_page, *employee_pages}).detach();
+				buffer_pool_manager.unpin_page(*employee_pages);
+				++employee_pages;
 
-				if (book_pages == _book_pages->end())
+				if (employee_pages == _employee_pages->end())
 					break;
 
-				book_page = fetch_page(*book_pages);
-				book_tuple = page_to_array<Books>(book_page)->begin();
+				employee_page = fetch_page(*employee_pages);
+				employee_tuple = page_to_array<Employee>(employee_page)->begin();
 			}
 		}
 
-		else // author_tuple->id == book_tuple->author_id
+		else // company_tuple->id == employee_tuple->company_id
 		{
-			if (std::strcmp(book_tuple->type.data(), "original") == 0) // books.type = 'original'
+			std::cout << std::format("{:30}\t{:30}\t{:50}\n",
+									 employee_tuple->fname.data(),
+									 employee_tuple->lname.data(),
+									 company_tuple->name.data());
+
+			++employee_tuple;
+
+			if (employee_tuple == page_to_array<Employee>(employee_page)->end())
 			{
-				std::cout << std::format("{:20}\t{:20}\t{:20}\n",
-										 author_tuple->fname.data(),
-										 author_tuple->lname.data(),
-										 book_tuple->title.data());
-			}
+				// (std::thread{unpin_page, *employee_pages}).detach();
+				buffer_pool_manager.unpin_page(*employee_pages);
+				++employee_pages;
 
-			++book_tuple;
-
-			if (book_tuple == page_to_array<Books>(book_page)->end())
-			{
-				(std::thread{unpin_page, *book_pages}).detach();
-				++book_pages;
-
-				if (book_pages == _book_pages->end())
+				if (employee_pages == _employee_pages->end())
 					break;
 
-				book_page = fetch_page(*book_pages);
-				book_tuple = page_to_array<Books>(book_page)->begin();
+				employee_page = fetch_page(*employee_pages);
+				employee_tuple = page_to_array<Employee>(employee_page)->begin();
 			}
 		}
 	}

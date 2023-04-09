@@ -1,13 +1,11 @@
 /**
  * Simulating the following SQL statement:
  * SELECT
- * 		authors.first_name, authors.last_name, books.title
+ * 		employee.first_name, employee.last_name, company.name
  * FROM
- * 		authors, books
+ * 		employee, company
  * WHERE
- * 		authors.id = books.author_id
- * AND
- * 		books.type = 'original';
+ * 		employee.company_id = company.id
  */
 
 #include <chrono>
@@ -18,26 +16,26 @@
 using namespace std::literals;
 
 #include "BufferPoolManager.hpp"
-// #include "ClockReplacer.hpp"
+#include "ClockReplacer.hpp"
 // #include "LRUReplacer.hpp"
-#include "MRUReplacer.hpp"
+// #include "MRUReplacer.hpp"
 #include "DiskManager.hpp"
 #include "Types.hpp"
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 4;
+constexpr size_t BUFFERSIZE = 32;
 
 int main()
 {
 	DiskManager disk_manager{};
-	// auto replacer = ClockReplacer<BUFFERSIZE>{};
+	auto replacer = ClockReplacer<BUFFERSIZE>{};
 	// auto replacer = LRUReplacer<BUFFERSIZE>{};
-	auto replacer = MRUReplacer<BUFFERSIZE>{};
+	// auto replacer = MRUReplacer<BUFFERSIZE>{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
-	auto _book_pages = disk_manager.add_page("./files/books.bin");
-	auto _author_pages = disk_manager.add_page("./files/authors.bin");
+	auto _company_pages = disk_manager.add_page("./files/company.bin");
+	auto _employee_pages = disk_manager.add_page("./files/employee.bin");
 
 	auto fetch_page = [&](page_id_t page_id) -> Page
 	{
@@ -57,61 +55,60 @@ int main()
 		buffer_pool_manager.unpin_page(page_id);
 	};
 
-	if (not _book_pages.has_value() or
-		not _author_pages.has_value())
+	if (not _company_pages.has_value() or
+		not _employee_pages.has_value())
 	{
 		fputs("Error opening file", stderr);
 		return EXIT_FAILURE;
 	}
 
-	auto book_pages = *_book_pages;
-	auto author_pages = *_author_pages;
+	auto company_pages = *_company_pages;
+	auto employee_pages = *_employee_pages;
 
-	std::cout << std::format("{:20}\t{:20}\t{:20}\n",
-							 "First Name", "Last Name", "Title");
+	std::cout << std::format("{:30}\t{:30}\t{:50}\n",
+							 "First Name", "Last Name", "Company Name");
 
-	for (auto book_page_id : book_pages)
+	for (auto company_page_id : company_pages)
 	{
-		auto page = fetch_page(book_page_id);
+		auto page = fetch_page(company_page_id);
 
-		auto books = *reinterpret_cast<
-			std::array<Books, PAGE_SIZE / sizeof(Books)> *>(&page.data);
+		auto companys = *reinterpret_cast<
+			std::array<Company, PAGE_SIZE / sizeof(Company)> *>(&page.data);
 
-		for (auto &book : books)
+		for (auto &company : companys)
 		{
-			if (book == Books{})
+			if (company == Company{})
 				break;
 
-			for (auto author_page_id : author_pages)
+			for (auto employee_page_id : employee_pages)
 			{
-				auto page = fetch_page(author_page_id);
+				auto page = fetch_page(employee_page_id);
 
-				auto authors = *reinterpret_cast<
-					std::array<Authors, PAGE_SIZE / sizeof(Authors)> *>(&page.data);
+				auto employees = *reinterpret_cast<
+					std::array<Employee, PAGE_SIZE / sizeof(Employee)> *>(&page.data);
 
-				for (auto &author : authors)
+				for (auto &employee : employees)
 				{
-					if (author == Authors{})
+					if (employee == Employee{})
 						break;
 
 					// Select Condition
-					if (author.id == book.author_id and					// authors.id = books.author_id
-						std::strcmp(book.type.data(), "original") == 0) // books.type = 'original'
+					if (company.id == employee.company_id )
 					{
-						std::cout << std::format("{:20}\t{:20}\t{:20}\n",
-												 author.fname.data(),
-												 author.lname.data(),
-												 book.title.data());
+						std::cout << std::format("{:30}\t{:30}\t{:50}\n",
+												 employee.fname.data(),
+												 employee.lname.data(),
+												 company.name.data());
 					}
 				}
 
-				(std::thread{unpin_page, author_page_id}).detach();
-				// buffer_pool_manager.unpin_page(author_page_id);
+				// (std::thread{unpin_page, employee_page_id}).detach();
+				buffer_pool_manager.unpin_page(employee_page_id);
 			}
 		}
 
-		(std::thread{unpin_page, book_page_id}).detach();
-		// buffer_pool_manager.unpin_page(book_page_id);
+		// (std::thread{unpin_page, company_page_id}).detach();
+		buffer_pool_manager.unpin_page(company_page_id);
 	}
 
 	std::cout << "\nNumber of I/Os: " << disk_manager.num_ios << '\n'
