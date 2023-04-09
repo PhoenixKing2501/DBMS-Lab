@@ -16,7 +16,6 @@ struct Replacer
 	std::array<Frame, N> *frames{nullptr};
 
 	Replacer() = default;
-
 	virtual ~Replacer() = default;
 
 	/**
@@ -40,7 +39,7 @@ struct Replacer
 	/**
 	 * @return the number of elements in the replacer that can be victimized
 	 */
-	virtual size_t size() = 0;
+	virtual auto size() -> size_t = 0;
 };
 
 template <size_t N>
