@@ -1,7 +1,7 @@
 #include <algorithm>
 
 template <size_t N>
-auto ClockReplacer<N>::victim()	-> std::optional<frame_id_t>
+auto ClockReplacer<N>::victim() -> std::optional<frame_id_t>
 {
 	if (not this->frames)
 	{
