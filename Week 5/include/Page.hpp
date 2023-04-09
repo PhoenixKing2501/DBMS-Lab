@@ -4,10 +4,8 @@
 #define _PAGE_HPP_
 
 #include <array>
-#include <cstdint>
 
-using page_id_t = int32_t;
-constexpr size_t PAGE_SIZE = 512;
+#include "Types.hpp"
 
 struct Page
 {

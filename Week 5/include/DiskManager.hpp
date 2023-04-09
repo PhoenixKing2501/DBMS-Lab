@@ -11,6 +11,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "Types.hpp"
+
 #include "Page.hpp"
 
 struct DiskManager

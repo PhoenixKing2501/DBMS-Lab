@@ -4,16 +4,15 @@
 #define _BUFFER_POOL_MANAGER_HPP_
 
 #include <array>
-#include <cstdint>
-#include <optional>
 #include <numeric>
+#include <optional>
 #include <unordered_map>
+
+#include "Types.hpp"
 
 #include "DiskManager.hpp"
 #include "Page.hpp"
 #include "Replacer.hpp"
-
-using frame_id_t = int32_t;
 
 template <size_t N = 10>
 struct BufferPoolManager

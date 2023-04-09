@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <optional>
 
+#include "Types.hpp"
+
 struct Replacer
 {
 	virtual ~Replacer() = default;
@@ -20,13 +22,13 @@ struct Replacer
 	 * @brief Pins a frame, indicating that it should not be victimized until it is unpinned.
 	 * @param frame_id the id of the frame to pin
 	 */
-	virtual auto pin(int32_t frame_id) -> void = 0;
+	virtual auto pin(frame_id_t frame_id) -> void = 0;
 
 	/**
 	 * @brief Unpins a frame, indicating that it can now be victimized.
 	 * @param frame_id the id of the frame to unpin
 	 */
-	virtual auto unpin(int32_t frame_id) -> void = 0;
+	virtual auto unpin(frame_id_t frame_id) -> void = 0;
 
 	/**
 	 * @return the number of elements in the replacer that can be victimized
