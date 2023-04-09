@@ -29,7 +29,7 @@ constexpr size_t BUFFERSIZE = 4;
 int main()
 {
 	DiskManager disk_manager{};
-	ClockReplacer<BUFFERSIZE> replacer{};
+	auto replacer = ClockReplacer<BUFFERSIZE>{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
 	auto _book_pages = disk_manager.add_page("./files/books.bin");
@@ -91,7 +91,7 @@ int main()
 						break;
 
 					// Select Condition
-					if (author.id == book.author_id and // authors.id = books.author_id
+					if (author.id == book.author_id and					// authors.id = books.author_id
 						std::strcmp(book.type.data(), "original") == 0) // books.type = 'original'
 					{
 						std::cout << std::format("{:20}\t{:20}\t{:20}\n",
@@ -102,12 +102,10 @@ int main()
 				}
 
 				(std::thread{unpin_page, author_page_id}).detach();
-				// buffer_pool_manager.unpin_page(author_page_id);
 			}
 		}
 
 		(std::thread{unpin_page, book_page_id}).detach();
-		// buffer_pool_manager.unpin_page(book_page_id);
 	}
 
 	std::cout << "\nNumber of I/Os: " << disk_manager.num_ios << '\n'

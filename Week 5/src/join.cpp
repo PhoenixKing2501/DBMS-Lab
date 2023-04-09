@@ -26,7 +26,7 @@ using namespace std::literals;
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 2;
+constexpr size_t BUFFERSIZE = 4;
 
 template <typename T>
 auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
@@ -37,7 +37,7 @@ auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
 int main()
 {
 	DiskManager disk_manager{};
-	ClockReplacer<BUFFERSIZE> replacer{};
+	auto replacer = ClockReplacer<BUFFERSIZE>{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
 	auto _book_pages = disk_manager.add_page("./files/books.bin");
@@ -97,7 +97,8 @@ int main()
 
 			if (author_tuple == page_to_array<Authors>(author_page)->end())
 			{
-				unpin_page(*author_pages++);
+				(std::thread{unpin_page, *author_pages}).detach();
+				++author_pages;
 
 				if (author_pages == _author_pages->end())
 					break;
@@ -112,7 +113,8 @@ int main()
 
 			if (book_tuple == page_to_array<Books>(book_page)->end())
 			{
-				unpin_page(*book_pages++);
+				(std::thread{unpin_page, *book_pages}).detach();
+				++book_pages;
 
 				if (book_pages == _book_pages->end())
 					break;
@@ -136,7 +138,8 @@ int main()
 
 			if (book_tuple == page_to_array<Books>(book_page)->end())
 			{
-				unpin_page(*book_pages++);
+				(std::thread{unpin_page, *book_pages}).detach();
+				++book_pages;
 
 				if (book_pages == _book_pages->end())
 					break;

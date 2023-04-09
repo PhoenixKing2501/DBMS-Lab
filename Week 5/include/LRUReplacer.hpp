@@ -1,18 +1,15 @@
 #pragma once
 
-#ifndef _CLOCK_REPLACER_HPP_
-#define _CLOCK_REPLACER_HPP_
+#ifndef _LRU_REPLACER_HPP_
+#define _LRU_REPLACER_HPP_
 
 #include "Replacer.hpp"
 
 template <size_t N>
-struct ClockReplacer : public Replacer<N>
+struct LRUReplacer : public Replacer<N>
 {
-	size_t clock_hand{0};
-	std::array<bool, N> reference_bits{false};
-
-	ClockReplacer() = default;
-	virtual ~ClockReplacer() = default;
+	LRUReplacer() = default;
+	virtual ~LRUReplacer() = default;
 
 	/**
 	 * @brief Remove the victim frame as defined by the replacement policy.
@@ -38,6 +35,4 @@ struct ClockReplacer : public Replacer<N>
 	auto size() -> size_t override;
 };
 
-#include "ClockReplacer.inl"
-
-#endif // _CLOCK_REPLACER_HPP_
+#endif // _LRU_REPLACER_HPP_

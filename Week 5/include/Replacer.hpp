@@ -13,7 +13,7 @@
 template <size_t N>
 struct Replacer
 {
-	std::array<Frame, N> *frames{nullptr};
+	std::array<Frame, N> *frames{nullptr}; // pointer to the frames
 
 	Replacer() = default;
 	virtual ~Replacer() = default;
