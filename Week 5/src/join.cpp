@@ -26,7 +26,7 @@ using namespace std::literals;
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 100;
+constexpr size_t BUFFERSIZE = 32;
 
 template <typename T>
 auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *

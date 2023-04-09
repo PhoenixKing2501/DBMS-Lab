@@ -47,6 +47,7 @@ auto ClockReplacer<N>::pin(frame_id_t frame_id) -> void
 	if (this->frames and frame_id < this->frames->size())
 	{
 		// (*this->frames)[frame_id].is_pinned = true;
+		this->reference_bits[frame_id] = true;
 		(*this->frames)[frame_id].pin_count++;
 	}
 }

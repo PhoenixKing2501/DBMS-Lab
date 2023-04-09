@@ -44,12 +44,6 @@ run_select_dev: .\bin\debug\select.exe
 
 .\bin\debug\join.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\join.obj
 	CL $(DEV_OBJ) .\obj\debug\join.obj $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\join.exe
-
-# {.\src\}.cpp{.\bin\opt\}.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\$(*B).obj
-# 	CL $< $(OPT_OBJ) .\obj\opt\$(*B).obj $(OPT) $(WARNING) $(DEFINES) /Fe$@
-	
-# {.\src\}.cpp{.\bin\debug\}.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\$(*B).obj
-# 	CL $< $(DEV_OBJ) .\obj\debug\$(*B).obj $(DEV) $(WARNING) $(DEFINES) /Fe$@
 	
 {.\src\}.cpp{.\obj\debug\}.obj:
 	CL $< $(DEV) $(WARNING) $(DEFINES) /c /Fo$@
@@ -62,5 +56,4 @@ run_select_dev: .\bin\debug\select.exe
 	DEL $*.obj
 
 clean:
-	-DEL .\bin\opt\ .\bin\debug\ .\obj\opt\ .\obj\debug\ \
-		*.pdb *.exe *.exp *.obj *.idb *.lib /Q /F
+	-DEL .\bin\opt\ .\bin\debug\ .\obj\opt\ .\obj\debug\ *.pdb *.exe *.exp *.obj *.idb *.lib /Q /F
