@@ -57,15 +57,12 @@ int main()
 		{
 			Books book{};
 			book.id = std::stoi(row[0]);
-			std::strcpy(book.title, row[1].c_str());
-			std::strcpy(book.type, row[2].c_str());
+			std::strcpy(book.title.data(), row[1].c_str());
+			std::strcpy(book.type.data(), row[2].c_str());
 			book.author_id = std::stoi(row[3]);
 
 			books.emplace_back(book);
 		}
-
-		// add empty book to books as sentinel
-		books.emplace_back(Books{});
 
 		std::ofstream file{"./files/books.bin", std::ios::binary};
 
@@ -75,6 +72,7 @@ int main()
 		}
 
 		file.close();
+		file.clear();
 
 		// Read books.csv
 
@@ -86,14 +84,11 @@ int main()
 		{
 			Authors author{};
 			author.id = std::stoi(row[0]);
-			std::strcpy(author.fname, row[1].c_str());
-			std::strcpy(author.lname, row[2].c_str());
+			std::strcpy(author.fname.data(), row[1].c_str());
+			std::strcpy(author.lname.data(), row[2].c_str());
 
 			authors.emplace_back(author);
 		}
-
-		// add empty author to authors as sentinel
-		authors.emplace_back(Authors{});
 
 		file.open("./files/authors.bin", std::ios::binary);
 
