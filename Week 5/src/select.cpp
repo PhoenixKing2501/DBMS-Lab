@@ -6,6 +6,8 @@
  * 		authors, books
  * WHERE
  * 		authors.id = books.author_id
+ * AND
+ * 		books.type = 'original';
  */
 
 #include <chrono>
@@ -88,9 +90,9 @@ int main()
 					if (author == Authors{})
 						break;
 
-					std::this_thread::sleep_for(50ms);
-
-					if (author.id == book.author_id)
+					// Select Condition
+					if (author.id == book.author_id and // authors.id = books.author_id
+						std::strcmp(book.type.data(), "original") == 0) // books.type = 'original'
 					{
 						std::cout << std::format("{:20}\t{:20}\t{:20}\n",
 												 author.fname.data(),

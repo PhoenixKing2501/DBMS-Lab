@@ -8,6 +8,8 @@
  * 		books
  * ON
  * 		authors.id = books.author_id
+ * WHERE
+ * 		books.type = 'original';
  */
 
 #include <chrono>
@@ -24,7 +26,7 @@ using namespace std::literals;
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 4;
+constexpr size_t BUFFERSIZE = 2;
 
 template <typename T>
 auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
@@ -119,12 +121,16 @@ int main()
 				book_tuple = page_to_array<Books>(book_page)->begin();
 			}
 		}
-		else
+
+		else // author_tuple->id == book_tuple->author_id
 		{
-			std::cout << std::format("{:20}\t{:20}\t{:20}\n",
-									 author_tuple->fname.data(),
-									 author_tuple->lname.data(),
-									 book_tuple->title.data());
+			if (std::strcmp(book_tuple->type.data(), "original") == 0) // books.type = 'original'
+			{
+				std::cout << std::format("{:20}\t{:20}\t{:20}\n",
+										 author_tuple->fname.data(),
+										 author_tuple->lname.data(),
+										 book_tuple->title.data());
+			}
 
 			++book_tuple;
 
