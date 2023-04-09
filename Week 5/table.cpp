@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -64,6 +65,12 @@ int main()
 			books.emplace_back(book);
 		}
 
+		std::sort(std::begin(books), std::end(books),
+				  [](const Books &a, const Books &b)
+				  {
+					  return a.author_id < b.author_id;
+				  });
+
 		std::ofstream file{"./files/books.bin", std::ios::binary};
 
 		for (const auto &book : books)
@@ -89,6 +96,12 @@ int main()
 
 			authors.emplace_back(author);
 		}
+
+		std::sort(std::begin(authors), std::end(authors),
+				  [](const Authors &a, const Authors &b)
+				  {
+					  return a.id < b.id;
+				  });
 
 		file.open("./files/authors.bin", std::ios::binary);
 

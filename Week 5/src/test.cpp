@@ -11,13 +11,13 @@ using namespace std::literals;
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 3;
+constexpr size_t BUFFERSIZE = 2;
 
 int main()
 {
 	DiskManager disk_manager{};
 	ClockReplacer<BUFFERSIZE> replacer{};
-	BufferPoolManager<BUFFERSIZE> buffer_manager{&disk_manager, &replacer};
+	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
 	auto book_pages = disk_manager.add_page("./files/books.bin");
 	auto author_pages = disk_manager.add_page("./files/authors.bin");
@@ -32,7 +32,7 @@ int main()
 	for (auto page_id : *book_pages)
 	{
 	fetch_book:
-		auto page = buffer_manager.fetch_page(page_id);
+		auto page = buffer_pool_manager.fetch_page(page_id);
 
 		if (not page.has_value())
 		{
@@ -58,10 +58,10 @@ int main()
 									 book.type.data());
 		}
 
-		std::thread t{[&buffer_manager, page_id]()
+		std::thread t{[&buffer_pool_manager, page_id]()
 					  {
 						  std::this_thread::sleep_for(2s);
-						  buffer_manager.unpin_page(page_id);
+						  buffer_pool_manager.unpin_page(page_id);
 						  std::cerr << "Unpinning page " << page_id << std::endl;
 					  }};
 		t.detach();
@@ -70,7 +70,7 @@ int main()
 	for (auto page_id : *author_pages)
 	{
 	fetch_author:
-		auto page = buffer_manager.fetch_page(page_id);
+		auto page = buffer_pool_manager.fetch_page(page_id);
 
 		if (not page.has_value())
 		{
@@ -94,10 +94,10 @@ int main()
 									 author.lname.data());
 		}
 
-		std::thread t{[&buffer_manager, page_id]()
+		std::thread t{[&buffer_pool_manager, page_id]()
 					  {
 						  std::this_thread::sleep_for(2s);
-						  buffer_manager.unpin_page(page_id);
+						  buffer_pool_manager.unpin_page(page_id);
 						  std::cerr << "Unpinning page " << page_id << std::endl;
 					  }};
 		t.detach();

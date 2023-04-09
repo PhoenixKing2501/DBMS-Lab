@@ -15,7 +15,8 @@ auto ClockReplacer<N>::victim() -> std::optional<frame_id_t>
 		this->frames->end(),
 		[](CRFrame frame)
 		{
-			return not frame.is_pinned;
+			// return not frame.is_pinned;
+			return frame.pin_count == 0;
 		});
 
 	if (victim == this->frames->end())
@@ -31,7 +32,8 @@ auto ClockReplacer<N>::victim() -> std::optional<frame_id_t>
 		}
 		else
 		{
-			if (not(*this->frames)[this->clock_hand].is_pinned)
+			// if (not(*this->frames)[this->clock_hand].is_pinned)
+			if ((*this->frames)[this->clock_hand].pin_count == 0)
 			{
 				return static_cast<frame_id_t>(this->clock_hand);
 			}
@@ -46,7 +48,8 @@ auto ClockReplacer<N>::pin(frame_id_t frame_id) -> void
 {
 	if (this->frames and frame_id < this->frames->size())
 	{
-		(*this->frames)[frame_id].is_pinned = true;
+		// (*this->frames)[frame_id].is_pinned = true;
+		(*this->frames)[frame_id].pin_count++;
 	}
 }
 
@@ -55,7 +58,8 @@ auto ClockReplacer<N>::unpin(frame_id_t frame_id) -> void
 {
 	if (this->frames and frame_id < this->frames->size())
 	{
-		(*this->frames)[frame_id].is_pinned = false;
+		// (*this->frames)[frame_id].is_pinned = false;
+		(*this->frames)[frame_id].pin_count--;
 	}
 }
 
@@ -72,6 +76,7 @@ auto ClockReplacer<N>::size() -> size_t
 		this->frames->end(),
 		[](CRFrame frame)
 		{
-			return not frame.is_pinned;
+			// return not frame.is_pinned;
+			return frame.pin_count == 0;
 		});
 }

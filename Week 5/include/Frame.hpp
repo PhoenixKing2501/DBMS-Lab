@@ -8,7 +8,8 @@
 struct Frame
 {
 	Page page{};		   // The page stored in the frame
-	bool is_pinned{false}; // Whether the page is pinned or not
+	uint16_t pin_count{0}; // The number of pins on the page
+	// bool is_pinned{false}; // Whether the page is pinned or not
 };
 
 using PFrame = Frame *;

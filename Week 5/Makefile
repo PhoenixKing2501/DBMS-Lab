@@ -9,24 +9,41 @@ OPT_OBJ = .\obj\opt\DiskManager.obj \
 DEV_OBJ = .\obj\debug\DiskManager.obj \
 		  .\obj\debug\Page.obj
 
-run: build
-	.\bin\opt\main.exe
+run_test: .\bin\opt\test.exe
+	.\bin\opt\test.exe 2> .\logs\test.log
 
-run_dev: build_dev
-	.\bin\debug\main.exe
+run_test_dev: .\bin\debug\test.exe
+	.\bin\debug\test.exe 2> .\logs\test.log
 
-build: .\bin\opt\main.exe
+run_join: .\bin\opt\join.exe
+	.\bin\opt\join.exe 2> .\logs\join.log
 
-build_dev: .\bin\debug\main.exe
+run_join_dev: .\bin\debug\join.exe
+	.\bin\debug\join.exe 2> .\logs\join.log
 
-check:
-	CL .\src\*.cpp $(FLAGS) $(WARNING) $(DEFINES) /Zs
+run_select: .\bin\opt\select.exe
+	.\bin\opt\select.exe 2> .\logs\select.log
+
+run_select_dev: .\bin\debug\select.exe
+	.\bin\debug\select.exe 2> .\logs\select.log
 
 .\bin\opt\test.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\test.obj
 	CL $(OPT_OBJ) .\obj\opt\test.obj $(OPT) $(WARNING) $(DEFINES) /Fe.\bin\opt\test.exe
 
 .\bin\debug\test.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\test.obj
 	CL $(DEV_OBJ) .\obj\debug\test.obj $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\test.exe
+
+.\bin\opt\select.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\select.obj
+	CL $(OPT_OBJ) .\obj\opt\select.obj $(OPT) $(WARNING) $(DEFINES) /Fe.\bin\opt\select.exe
+
+.\bin\debug\select.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\select.obj
+	CL $(DEV_OBJ) .\obj\debug\select.obj $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\select.exe
+
+.\bin\opt\join.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\join.obj
+	CL $(OPT_OBJ) .\obj\opt\join.obj $(OPT) $(WARNING) $(DEFINES) /Fe.\bin\opt\join.exe
+
+.\bin\debug\join.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\join.obj
+	CL $(DEV_OBJ) .\obj\debug\join.obj $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\join.exe
 
 # {.\src\}.cpp{.\bin\opt\}.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\$(*B).obj
 # 	CL $< $(OPT_OBJ) .\obj\opt\$(*B).obj $(OPT) $(WARNING) $(DEFINES) /Fe$@
@@ -45,4 +62,5 @@ check:
 	DEL $*.obj
 
 clean:
-	-DEL .\bin\opt\ .\bin\debug\ .\obj\opt\ .\obj\debug\ *.pdb *.exe *.exp *.obj *.idb *.lib /Q /F
+	-DEL .\bin\opt\ .\bin\debug\ .\obj\opt\ .\obj\debug\ \
+		*.pdb *.exe *.exp *.obj *.idb *.lib /Q /F
