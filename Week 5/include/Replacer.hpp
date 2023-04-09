@@ -51,4 +51,6 @@ using RReplacer = Replacer<N> &;
 template <size_t N>
 using CRReplacer = const Replacer<N> &;
 
+#include "Replacer.hpp"
+
 #endif // _REPLACER_HPP_

@@ -38,4 +38,6 @@ struct ClockReplacer : public Replacer<N>
 	auto size() -> size_t override;
 };
 
+#include "ClockReplacer.inl"
+
 #endif // _CLOCKREPLACER_HPP_

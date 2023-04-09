@@ -7,6 +7,6 @@
 
 using frame_id_t = uint32_t;
 using page_id_t = uint32_t;
-constexpr size_t PAGE_SIZE = 512;
+constexpr size_t PAGE_SIZE = 128;
 
 #endif // _TYPES_HPP_

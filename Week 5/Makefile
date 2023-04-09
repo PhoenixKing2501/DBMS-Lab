@@ -1,17 +1,13 @@
-INC     = /I C:\Users\utsav\source\include /I .\include
+INC     = /I .\include
 FLAGS   = /EHsc /nologo /diagnostics:caret /std:c++latest /utf-8 /permissive- /Zc:wchar_t $(INC)
 DEV     = $(FLAGS) /ZI /fsanitize=address
 OPT     = $(FLAGS) /Ox /O2 /Ot /favor:INTEL64
 WARNING = /W2 /WL
 DEFINES = /D _USE_MATH_DEFINES /D _UNICODE /D UNICODE
-OPT_OBJ = .\obj\opt\buffer_pool_manager.obj \
-		  .\obj\opt\clock_replacer.obj \
-		  .\obj\opt\lru_replacer \
-		  .\obj\opt\main.obj
-DEV_OBJ = .\obj\debug\buffer_pool_manager.obj \
-		  .\obj\debug\clock_replacer.obj \
-		  .\obj\debug\lru_replacer \
-		  .\obj\debug\main.obj
+OPT_OBJ = .\obj\opt\DiskManager.obj \
+		  .\obj\opt\Page.obj
+DEV_OBJ = .\obj\debug\DiskManager.obj \
+		  .\obj\debug\Page.obj
 
 run: build
 	.\bin\opt\main.exe
@@ -26,11 +22,17 @@ build_dev: .\bin\debug\main.exe
 check:
 	CL .\src\*.cpp $(FLAGS) $(WARNING) $(DEFINES) /Zs
 
-.\bin\opt\main.exe: .\include\*.hpp $(OPT_OBJ)
-	CL $(OPT_OBJ) $(OPT) $(WARNING) $(DEFINES) /Fe.\bin\opt\main.exe
+.\bin\opt\test.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\test.obj
+	CL $(OPT_OBJ) .\obj\opt\test.obj $(OPT) $(WARNING) $(DEFINES) /Fe.\bin\opt\test.exe
 
-.\bin\debug\main.exe: .\include\*.hpp $(DEV_OBJ)
-	CL $(DEV_OBJ) $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\main.exe
+.\bin\debug\test.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\test.obj
+	CL $(DEV_OBJ) .\obj\debug\test.obj $(DEV) $(WARNING) $(DEFINES) /Fe.\bin\debug\test.exe
+
+# {.\src\}.cpp{.\bin\opt\}.exe: .\include\*.hpp $(OPT_OBJ) .\obj\opt\$(*B).obj
+# 	CL $< $(OPT_OBJ) .\obj\opt\$(*B).obj $(OPT) $(WARNING) $(DEFINES) /Fe$@
+	
+# {.\src\}.cpp{.\bin\debug\}.exe: .\include\*.hpp $(DEV_OBJ) .\obj\debug\$(*B).obj
+# 	CL $< $(DEV_OBJ) .\obj\debug\$(*B).obj $(DEV) $(WARNING) $(DEFINES) /Fe$@
 	
 {.\src\}.cpp{.\obj\debug\}.obj:
 	CL $< $(DEV) $(WARNING) $(DEFINES) /c /Fo$@

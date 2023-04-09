@@ -11,11 +11,14 @@ auto ClockReplacer<N>::victim() -> std::optional<frame_id_t>
 	}
 
 	auto victim = std::find_if(
-		std::cbegin(this->frames), std::cend(this->frames),
+		this->frames->begin(),
+		this->frames->end(),
 		[](CRFrame frame)
-		{ return not frame.is_pinned; });
+		{
+			return not frame.is_pinned;
+		});
 
-	if (victim == std::end(this->frames))
+	if (victim == this->frames->end())
 	{
 		return std::nullopt;
 	}
@@ -34,14 +37,14 @@ auto ClockReplacer<N>::victim() -> std::optional<frame_id_t>
 			}
 		}
 
-		this->clock_hand = (this->clock_hand + 1) % std::size(this->frames);
+		this->clock_hand = (this->clock_hand + 1) % this->frames->size();
 	}
 }
 
 template <size_t N>
 auto ClockReplacer<N>::pin(frame_id_t frame_id) -> void
 {
-	if (this->frames and frame_id < std::size(this->frames))
+	if (this->frames and frame_id < this->frames->size())
 	{
 		(*this->frames)[frame_id].is_pinned = true;
 	}
@@ -50,7 +53,7 @@ auto ClockReplacer<N>::pin(frame_id_t frame_id) -> void
 template <size_t N>
 auto ClockReplacer<N>::unpin(frame_id_t frame_id) -> void
 {
-	if (this->frames and frame_id < std::size(this->frames))
+	if (this->frames and frame_id < this->frames->size())
 	{
 		(*this->frames)[frame_id].is_pinned = false;
 	}
@@ -65,7 +68,10 @@ auto ClockReplacer<N>::size() -> size_t
 	}
 
 	return std::count_if(
-		std::cbegin(this->frames), std::cend(this->frames),
+		this->frames->begin(),
+		this->frames->end(),
 		[](CRFrame frame)
-		{ return not frame.is_pinned; });
+		{
+			return not frame.is_pinned;
+		});
 }

@@ -55,7 +55,7 @@ struct BufferPoolManager
 	 * @param page_id The page id to fetch
 	 * @return The page if the page is fetched successfully, std::nullopt otherwise
 	 */
-	auto fetch_page(page_id_t page_id) -> std::optional<CRPage>;
+	auto fetch_page(page_id_t page_id) -> std::optional<Page>;
 
 	/**
 	 * @brief Unpins a page
@@ -63,13 +63,8 @@ struct BufferPoolManager
 	 * @return true if the page is unpinned successfully, false otherwise
 	 */
 	auto unpin_page(page_id_t page_id) -> bool;
-
-	/**
-	 * @brief freees a page to disk
-	 * @param page_id The page id to free
-	 * @return true if the page is freed successfully, false otherwise
-	 */
-	auto free_page(page_id_t page_id) -> bool;
 };
+
+#include "BufferPoolManager.inl"
 
 #endif // _BUFFER_POOL_MANAGER_HPP_

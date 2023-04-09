@@ -1,12 +1,13 @@
-#include "BufferPoolManager.hpp"
-
 template <size_t N>
 BufferPoolManager<N>::BufferPoolManager(
 	PDiskManager _disk_manager, PReplacer<N> _replacer)
-	: disk_manager{_disk_manager}, replacer{_replacer} {}
+	: disk_manager{_disk_manager}, replacer{_replacer}
+{
+	replacer->frames = &this->frames;
+}
 
 template <size_t N>
-auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<CRPage>
+auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 {
 	// If the page is already in the buffer pool, return it
 	if (auto it = page_table.find(page_id); it != std::end(page_table))
@@ -20,7 +21,7 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<CRPage
 	// If the buffer pool is full, evict a page
 	if (free_list.size == 0)
 	{
-		auto frame_id = replacer->Victim();
+		auto frame_id = replacer->victim();
 		if (!frame_id.has_value())
 		{
 			return std::nullopt;
@@ -32,6 +33,8 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<CRPage
 		}
 
 		page_table.erase(frame.page.id);
+		std::cerr << "Evicting page " << frame.page.id << std::endl;
+
 		free_list.push(frame_id.value());
 	}
 
@@ -42,6 +45,8 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<CRPage
 		return std::nullopt;
 	}
 
+	std::cerr << "Fetching page " << page_id << std::endl;
+
 	auto frame_id = free_list.pop();
 	auto &frame = frames[frame_id];
 	frame.page = page.value();
@@ -49,4 +54,18 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<CRPage
 	page_table[page_id] = frame_id;
 
 	return frame.page;
+}
+
+template <size_t N>
+auto BufferPoolManager<N>::unpin_page(page_id_t page_id) -> bool
+{
+	if (auto it = page_table.find(page_id); it != std::end(page_table))
+	{
+		auto frame_id = it->second;
+		auto &frame = frames[frame_id];
+		frame.is_pinned = false;
+		replacer->unpin(frame_id);
+		return true;
+	}
+	return false;
 }
