@@ -19,11 +19,11 @@ struct DiskManager
 	struct PageInfo
 	{
 		std::string filename;
-		int64_t offset;
+		size_t offset;
 	};
 
 	std::unordered_map<page_id_t, PageInfo> pages{}; // The pages on the disk
-	int64_t num_ios{0};								 // The number of I/Os
+	uint64_t num_ios{0};								 // The number of I/Os
 
 	DiskManager() = default;
 	~DiskManager() = default;

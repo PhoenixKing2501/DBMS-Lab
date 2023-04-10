@@ -14,6 +14,10 @@ auto DiskManager::read_page(page_id_t page_id)
 		file.seekg(pages[page_id].offset);
 		std::array<char, PAGE_SIZE> data{};
 		file.read(reinterpret_cast<char *>(data.data()), PAGE_SIZE);
+
+		if (file.gcount() == 0)
+			return std::nullopt;
+		
 		return Page{page_id, data};
 	}
 
@@ -33,10 +37,10 @@ auto DiskManager::add_page(const std::string &filename)
 	const auto file_size = file.tellg();
 	file.seekg(0, std::ios::beg);
 
-	for (auto i = 0; i < file_size; i += PAGE_SIZE)
+	for (size_t i = 0; i < file_size; i += PAGE_SIZE)
 	{
 		const auto page_id = Page::generate_page_id();
-		pages[page_id] = PageInfo{filename, i};
+		pages.emplace(page_id, PageInfo{filename, i});
 		page_ids.push_back(page_id);
 	}
 
