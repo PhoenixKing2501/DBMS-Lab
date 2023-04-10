@@ -65,11 +65,7 @@ int main()
 			employees.emplace_back(employee);
 		}
 
-		std::sort(std::begin(employees), std::end(employees),
-				  [](const Employee &a, const Employee &b)
-				  {
-					  return a.company_id < b.company_id;
-				  });
+		// std::sort(std::begin(employees), std::end(employees));
 
 		std::ofstream file{"./files/employee.bin", std::ios::binary};
 
@@ -97,11 +93,7 @@ int main()
 			companys.emplace_back(company);
 		}
 
-		std::sort(std::begin(companys), std::end(companys),
-				  [](const Company &a, const Company &b)
-				  {
-					  return a.id < b.id;
-				  });
+		// std::sort(std::begin(companys), std::end(companys));
 
 		file.open("./files/company.bin", std::ios::binary);
 

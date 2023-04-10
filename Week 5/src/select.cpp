@@ -24,7 +24,7 @@ using namespace std::literals;
 
 #include "Tables.hpp"
 
-constexpr size_t BUFFERSIZE = 8;
+constexpr size_t BUFFERSIZE = 32;
 
 template <typename T>
 auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
@@ -51,13 +51,13 @@ int main()
 			if (page.has_value())
 				return *page;
 			std::fputs("No Frame Free\n", stderr);
-			std::this_thread::sleep_for(100ms);
+			std::this_thread::sleep_for(10ms);
 		}
 	};
 
 	auto unpin_page = [&](page_id_t page_id)
 	{
-		std::this_thread::sleep_for(500ms);
+		std::this_thread::sleep_for(50ms);
 		buffer_pool_manager.unpin_page(page_id);
 	};
 
@@ -106,13 +106,13 @@ int main()
 					}
 				}
 
-				// (std::thread{unpin_page, employee_page_id}).detach();
-				buffer_pool_manager.unpin_page(employee_page_id);
+				(std::thread{unpin_page, employee_page_id}).detach();
+				// buffer_pool_manager.unpin_page(employee_page_id);
 			}
 		}
 
-		// (std::thread{unpin_page, company_page_id}).detach();
-		buffer_pool_manager.unpin_page(company_page_id);
+		(std::thread{unpin_page, company_page_id}).detach();
+		// buffer_pool_manager.unpin_page(company_page_id);
 	}
 
 	std::cout << "\nNumber of I/Os: " << disk_manager.num_ios << '\n'

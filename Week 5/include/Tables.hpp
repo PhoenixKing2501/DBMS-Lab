@@ -16,12 +16,12 @@ struct Employee
 
 	friend auto operator==(const Employee &lhs, const Employee &rhs) -> bool
 	{
-		return lhs.id == rhs.id;
+		return lhs.company_id == rhs.company_id;
 	}
 
 	friend auto operator<=>(const Employee &lhs, const Employee &rhs) -> std::strong_ordering
 	{
-		return lhs.id <=> rhs.id;
+		return lhs.company_id <=> rhs.company_id;
 	}
 };
 

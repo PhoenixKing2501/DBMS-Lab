@@ -53,13 +53,13 @@ int main()
 			if (page.has_value())
 				return *page;
 			std::fputs("No Frame Free\n", stderr);
-			std::this_thread::sleep_for(100ms);
+			std::this_thread::sleep_for(10ms);
 		}
 	};
 
 	auto unpin_page = [&](page_id_t page_id)
 	{
-		std::this_thread::sleep_for(500ms);
+		std::this_thread::sleep_for(50ms);
 		buffer_pool_manager.unpin_page(page_id);
 	};
 
@@ -99,8 +99,8 @@ int main()
 
 			if (company_tuple == page_to_array<Company>(company_page)->end())
 			{
-				// (std::thread{unpin_page, *company_pages}).detach();
-				buffer_pool_manager.unpin_page(*company_pages);
+				(std::thread{unpin_page, *company_pages}).detach();
+				// buffer_pool_manager.unpin_page(*company_pages);
 				++company_pages;
 
 				if (company_pages == _company_pages->end())
@@ -116,8 +116,8 @@ int main()
 
 			if (employee_tuple == page_to_array<Employee>(employee_page)->end())
 			{
-				// (std::thread{unpin_page, *employee_pages}).detach();
-				buffer_pool_manager.unpin_page(*employee_pages);
+				(std::thread{unpin_page, *employee_pages}).detach();
+				// buffer_pool_manager.unpin_page(*employee_pages);
 				++employee_pages;
 
 				if (employee_pages == _employee_pages->end())
@@ -139,8 +139,8 @@ int main()
 
 			if (employee_tuple == page_to_array<Employee>(employee_page)->end())
 			{
-				// (std::thread{unpin_page, *employee_pages}).detach();
-				buffer_pool_manager.unpin_page(*employee_pages);
+				(std::thread{unpin_page, *employee_pages}).detach();
+				// buffer_pool_manager.unpin_page(*employee_pages);
 				++employee_pages;
 
 				if (employee_pages == _employee_pages->end())
