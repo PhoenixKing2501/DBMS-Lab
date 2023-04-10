@@ -4,7 +4,6 @@
 #define _PAGE_HPP_
 
 #include <array>
-#include <functional>
 
 #include "Types.hpp"
 
@@ -14,7 +13,8 @@ struct Page
 	page_id_t id{};						// id of the page
 	std::array<char, PAGE_SIZE> data{}; // Stores the actual data
 
-	static std::function<page_id_t()> generate_page_id;
+	static auto generate_page_id() -> page_id_t { return generateId++; }
+
 };
 
 using PPage = Page *;

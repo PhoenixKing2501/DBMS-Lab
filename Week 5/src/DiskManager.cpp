@@ -4,8 +4,18 @@ auto DiskManager::read_page(page_id_t page_id)
 	-> std::optional<Page>
 {
 	++num_ios;
+
 	if (pages.find(page_id) != std::end(pages))
-		return pages[page_id];
+	{
+		std::ifstream file{pages[page_id].filename, std::ios::binary};
+		if (not file.is_open())
+			return std::nullopt;
+
+		file.seekg(pages[page_id].offset);
+		std::array<char, PAGE_SIZE> data{};
+		file.read(reinterpret_cast<char *>(data.data()), PAGE_SIZE);
+		return Page{page_id, data};
+	}
 
 	return std::nullopt;
 }
@@ -14,25 +24,20 @@ auto DiskManager::add_page(const std::string &filename)
 	-> std::optional<std::vector<page_id_t>>
 {
 	std::ifstream file{filename, std::ios::binary};
-	if (!file.is_open())
+	if (not file.is_open())
 		return std::nullopt;
 
-	std::array<char, PAGE_SIZE> data{};
 	std::vector<page_id_t> page_ids{};
-	while (file.read(data.data(), PAGE_SIZE))
-	{
-		Page page{Page::generate_page_id(), std::move(data)};
-		pages[page.id] = std::move(page);
-		page_ids.push_back(page.id);
 
-		data.fill(0);
-	}
+	file.seekg(0, std::ios::end);
+	const auto file_size = file.tellg();
+	file.seekg(0, std::ios::beg);
 
-	if (file.gcount() > 0)
+	for (auto i = 0; i < file_size; i += PAGE_SIZE)
 	{
-		Page page{Page::generate_page_id(), std::move(data)};
-		pages[page.id] = std::move(page);
-		page_ids.push_back(page.id);
+		const auto page_id = Page::generate_page_id();
+		pages[page_id] = PageInfo{filename, i};
+		page_ids.push_back(page_id);
 	}
 
 	return page_ids;

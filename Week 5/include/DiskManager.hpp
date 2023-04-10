@@ -16,8 +16,14 @@
 
 struct DiskManager
 {
-	std::unordered_map<page_id_t, Page> pages{}; // The pages on the disk
-	int64_t num_ios{0};							 // The number of I/Os
+	struct PageInfo
+	{
+		std::string filename;
+		int64_t offset;
+	};
+
+	std::unordered_map<page_id_t, PageInfo> pages{}; // The pages on the disk
+	int64_t num_ios{0};								 // The number of I/Os
 
 	DiskManager() = default;
 	~DiskManager() = default;
