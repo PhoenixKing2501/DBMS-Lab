@@ -23,7 +23,7 @@ struct DiskManager
 	};
 
 	std::unordered_map<page_id_t, PageInfo> pages{}; // The pages on the disk
-	uint64_t num_ios{0};								 // The number of I/Os
+	uint64_t num_ios{0};							 // The number of I/Os
 
 	DiskManager() = default;
 	~DiskManager() = default;

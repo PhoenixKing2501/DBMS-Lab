@@ -4,10 +4,8 @@ DEV     = $(FLAGS) /ZI /fsanitize=address
 OPT     = $(FLAGS) /Ox /O2 /Ot /favor:INTEL64
 WARNING = /W2 /WL
 DEFINES = /D _USE_MATH_DEFINES /D _UNICODE /D UNICODE
-OPT_OBJ = .\obj\opt\DiskManager.obj \
-		  .\obj\opt\Page.obj
-DEV_OBJ = .\obj\debug\DiskManager.obj \
-		  .\obj\debug\Page.obj
+OPT_OBJ = .\obj\opt\DiskManager.obj
+DEV_OBJ = .\obj\debug\DiskManager.obj
 
 run_join: .\bin\opt\join.exe
 	.\bin\opt\join.exe 2> .\logs\join.log
