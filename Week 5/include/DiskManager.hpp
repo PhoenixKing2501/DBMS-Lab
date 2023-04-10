@@ -3,7 +3,6 @@
 #ifndef _DISK_MANAGER_HPP_
 #define _DISK_MANAGER_HPP_
 
-// #include <array>
 #include <array>
 #include <cstdint>
 #include <fstream>
@@ -22,9 +21,6 @@ struct DiskManager
 
 	DiskManager() = default;
 	~DiskManager() = default;
-
-	// void open();
-	// void close();
 
 	/**
 	 * @brief Read a page from disk
