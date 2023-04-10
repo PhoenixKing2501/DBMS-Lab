@@ -49,7 +49,7 @@ int main()
 	auto fetch_page = [&](page_id_t page_id) -> Page
 	{
 		static std::mt19937_64 gen{std::random_device{}()};
-		static std::uniform_int_distribution dis{10, 50};
+		static std::uniform_int_distribution dis{10, 20};
 
 		while (true)
 		{
@@ -65,7 +65,7 @@ int main()
 	auto unpin_page = [&](page_id_t page_id)
 	{
 		static std::mt19937_64 gen{std::random_device{}()};
-		static std::uniform_int_distribution dis{10, 50};
+		static std::uniform_int_distribution dis{10, 20};
 
 		std::this_thread::sleep_for(std::chrono::milliseconds{dis(gen)});
 		buffer_pool_manager.unpin_page(page_id);
