@@ -31,16 +31,14 @@ struct DiskManager
 	 * @param page_id The page id to read from disk
 	 * @return The page, std::nullopt if the page does not exist
 	 */
-	auto read_page(page_id_t page_id)
-		-> std::optional<Page>;
+	auto read_page(page_id_t page_id) -> std::optional<Page>;
 
 	/**
 	 * @brief Add pages from a file to the disk
 	 * @param filename The filename to read from
 	 * @return The page ids of the pages added, std::nullopt if the file does not exist
 	 */
-	auto add_page(const std::string &filename)
-		-> std::optional<std::vector<frame_id_t>>;
+	auto add_page(const std::string &filename) -> std::optional<std::vector<page_id_t>>;
 };
 
 using PDiskManager = DiskManager *;

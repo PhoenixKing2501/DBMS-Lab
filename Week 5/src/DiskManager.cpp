@@ -11,30 +11,29 @@ auto DiskManager::read_page(page_id_t page_id)
 }
 
 auto DiskManager::add_page(const std::string &filename)
-	-> std::optional<std::vector<frame_id_t>>
+	-> std::optional<std::vector<page_id_t>>
 {
 	std::ifstream file{filename, std::ios::binary};
 	if (!file.is_open())
 		return std::nullopt;
 
 	std::array<char, PAGE_SIZE> data{};
-	std::vector<frame_id_t> frame_ids{};
+	std::vector<page_id_t> page_ids{};
 	while (file.read(data.data(), PAGE_SIZE))
 	{
 		Page page{Page::generate_page_id(), std::move(data)};
 		pages[page.id] = std::move(page);
-		frame_ids.push_back(page.id);
+		page_ids.push_back(page.id);
 
 		data.fill(0);
 	}
 
-	if (file.gcount() > 0)	
+	if (file.gcount() > 0)
 	{
 		Page page{Page::generate_page_id(), std::move(data)};
 		pages[page.id] = std::move(page);
-		frame_ids.push_back(page.id);
+		page_ids.push_back(page.id);
 	}
-	
 
-	return frame_ids;
+	return page_ids;
 }

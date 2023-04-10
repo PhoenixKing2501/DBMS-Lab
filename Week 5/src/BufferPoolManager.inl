@@ -25,7 +25,7 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 	if (free_list.size == 0)
 	{
 		auto frame_id = replacer->victim();
-		if (!frame_id.has_value())
+		if (not frame_id.has_value())
 		{
 			return std::nullopt;
 		}
