@@ -101,6 +101,10 @@ int main()
 	while (employee_pages != _employee_pages->end() or
 		   company_pages != _company_pages->end())
 	{
+		if (*company_tuple == Company{} or
+			*employee_tuple == Employee{})
+			break;
+			
 		if (company_tuple->id < employee_tuple->company_id)
 		{
 			++company_tuple;
