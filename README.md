@@ -1,4 +1,4 @@
-# Operating Systems Lab
+# DBMS Lab
 ## Git Repo of DBMS Lab
 ### Members
 * Utsav Basu (20CS30057)
