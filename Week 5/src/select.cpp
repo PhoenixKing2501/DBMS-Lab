@@ -11,15 +11,16 @@
 #include <chrono>
 #include <format>
 #include <iostream>
+#include <random>
 #include <thread>
 
 using namespace std::literals;
 
 #include "BufferPoolManager.hpp"
 #include "ClockReplacer.hpp"
-// #include "LRUReplacer.hpp"
-// #include "MRUReplacer.hpp"
 #include "DiskManager.hpp"
+#include "LRUReplacer.hpp"
+#include "MRUReplacer.hpp"
 #include "Types.hpp"
 
 #include "Tables.hpp"
@@ -35,9 +36,9 @@ auto page_to_array(RPage page) -> std::array<T, PAGE_SIZE / sizeof(T)> *
 int main()
 {
 	DiskManager disk_manager{};
-	auto replacer = ClockReplacer<BUFFERSIZE>{};
+	// auto replacer = ClockReplacer<BUFFERSIZE>{};
 	// auto replacer = LRUReplacer<BUFFERSIZE>{};
-	// auto replacer = MRUReplacer<BUFFERSIZE>{};
+	auto replacer = MRUReplacer<BUFFERSIZE>{};
 	BufferPoolManager<BUFFERSIZE> buffer_pool_manager{&disk_manager, &replacer};
 
 	auto _company_pages = disk_manager.add_page("./files/company.bin");
@@ -45,19 +46,26 @@ int main()
 
 	auto fetch_page = [&](page_id_t page_id) -> Page
 	{
+		static std::mt19937_64 gen{std::random_device{}()};
+		static std::uniform_int_distribution dis{10, 50};
+
 		while (true)
 		{
 			auto page = buffer_pool_manager.fetch_page(page_id);
 			if (page.has_value())
 				return *page;
+
 			std::fputs("No Frame Free\n", stderr);
-			std::this_thread::sleep_for(10ms);
+			std::this_thread::sleep_for(std::chrono::milliseconds{dis(gen)});
 		}
 	};
 
 	auto unpin_page = [&](page_id_t page_id)
 	{
-		std::this_thread::sleep_for(50ms);
+		static std::mt19937_64 gen{std::random_device{}()};
+		static std::uniform_int_distribution dis{10, 50};
+
+		std::this_thread::sleep_for(std::chrono::milliseconds{dis(gen)});
 		buffer_pool_manager.unpin_page(page_id);
 	};
 
@@ -71,29 +79,29 @@ int main()
 	auto company_pages = *_company_pages;
 	auto employee_pages = *_employee_pages;
 
-	std::cout << std::format("{:30}\t{:30}\t{:50}\n",
+	std::cout << std::format("{:30}\t{:30}\t{:50}\n\n",
 							 "First Name", "Last Name", "Company Name");
 
-	for (auto company_page_id : company_pages)
+	for (auto employee_page_id : employee_pages)
 	{
-		auto page = fetch_page(company_page_id);
+		auto page = fetch_page(employee_page_id);
 
-		auto companys = *page_to_array<Company>(page);
+		auto employees = *page_to_array<Employee>(page);
 
-		for (auto &company : companys)
+		for (auto &employee : employees)
 		{
-			if (company == Company{})
+			if (employee == Employee{})
 				break;
 
-			for (auto employee_page_id : employee_pages)
+			for (auto company_page_id : company_pages)
 			{
-				auto page = fetch_page(employee_page_id);
+				auto page = fetch_page(company_page_id);
 
-				auto employees = *page_to_array<Employee>(page);
+				auto companys = *page_to_array<Company>(page);
 
-				for (auto &employee : employees)
+				for (auto &company : companys)
 				{
-					if (employee == Employee{})
+					if (company == Company{})
 						break;
 
 					// Select Condition
@@ -106,13 +114,13 @@ int main()
 					}
 				}
 
-				(std::thread{unpin_page, employee_page_id}).detach();
-				// buffer_pool_manager.unpin_page(employee_page_id);
+				(std::thread{unpin_page, company_page_id}).detach();
+				// buffer_pool_manager.unpin_page(company_page_id);
 			}
 		}
 
-		(std::thread{unpin_page, company_page_id}).detach();
-		// buffer_pool_manager.unpin_page(company_page_id);
+		(std::thread{unpin_page, employee_page_id}).detach();
+		// buffer_pool_manager.unpin_page(employee_page_id);
 	}
 
 	std::cout << "\nNumber of I/Os: " << disk_manager.num_ios << '\n'
