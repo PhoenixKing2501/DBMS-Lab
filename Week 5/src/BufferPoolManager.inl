@@ -15,8 +15,8 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 		auto frame_id = it->second;
 		auto &frame = frames[frame_id];
 		replacer->pin(frame_id);
-		std::fprintf(stderr, "Hit page %u\n", page_id);
-		std::fprintf(stderr, "Pinning Page %u Frame %u Pin Count %hu\n",
+		std::fprintf(stderr, "Hit    Page %4u\n", page_id);
+		std::fprintf(stderr, "Pin    Page %4u Frame %4u Pin Count %2hu\n",
 					 page_id, frame_id, frame.pin_count);
 		return frame.page;
 	}
@@ -32,7 +32,7 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 		auto &frame = frames[frame_id.value()];
 
 		page_table.erase(frame.page.id);
-		std::fprintf(stderr, "Evicting page %d from Frame %u\n",
+		std::fprintf(stderr, "Evict  Page %4d Frame %4u\n",
 					 frame.page.id, frame_id.value());
 
 		free_list.push(frame_id.value());
@@ -49,8 +49,8 @@ auto BufferPoolManager<N>::fetch_page(page_id_t page_id) -> std::optional<Page>
 	auto &frame = frames[frame_id];
 	frame.page = page.value();
 	replacer->pin(frame_id);
-	std::fprintf(stderr, "Fetching page %u to Frame %u\n", page_id, frame_id);
-	std::fprintf(stderr, "Pinning Page %u Frame %u Pin Count %hu\n",
+	std::fprintf(stderr, "Fetch  page %4u Frame %4u\n", page_id, frame_id);
+	std::fprintf(stderr, "Pin    Page %4u Frame %4u Pin Count %2hu\n",
 				 page_id, frame_id, frame.pin_count);
 	page_table[page_id] = frame_id;
 
@@ -65,7 +65,7 @@ auto BufferPoolManager<N>::unpin_page(page_id_t page_id) -> bool
 		auto frame_id = it->second;
 		auto &frame = frames[frame_id];
 		replacer->unpin(frame_id);
-		std::fprintf(stderr, "Unpinning page %u Frame %hu Pin Count %hu\n",
+		std::fprintf(stderr, "Unpin  Page %4u Frame %4u Pin Count %2hu\n",
 					 page_id, frame_id, frame.pin_count);
 		return true;
 	}

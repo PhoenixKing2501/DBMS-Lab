@@ -24,7 +24,7 @@ struct BufferPoolManager
 			[&]() -> std::array<frame_id_t, N>
 			{
 				std::array<frame_id_t, N> free_list{};
-				std::iota(std::begin(free_list), std::end(free_list), 0);
+				std::iota(std::rbegin(free_list), std::rend(free_list), 0);
 				return free_list;
 			}()};
 
