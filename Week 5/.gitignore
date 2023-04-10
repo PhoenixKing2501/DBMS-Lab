@@ -1,0 +1,11 @@
+/.vscode/
+/obj/
+/bin/
+/files/*.bin
+*.obj
+*.exe
+*.pdb
+*.lib
+*.exp
+*.idb
+/logs/
