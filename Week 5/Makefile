@@ -9,12 +9,6 @@ OPT_OBJ = .\obj\opt\DiskManager.obj \
 DEV_OBJ = .\obj\debug\DiskManager.obj \
 		  .\obj\debug\Page.obj
 
-run_test: .\bin\opt\test.exe
-	.\bin\opt\test.exe 2> .\logs\test.log
-
-run_test_dev: .\bin\debug\test.exe
-	.\bin\debug\test.exe 2> .\logs\test.log
-
 run_join: .\bin\opt\join.exe
 	.\bin\opt\join.exe 2> .\logs\join.log
 
