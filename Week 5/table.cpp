@@ -28,8 +28,8 @@ Table readCSV(
 
 		while (std::getline(sstr, word, delim))
 		{
-			word.erase(0, word.find_first_not_of(" \t\n\r"));
-			word.erase(word.find_last_not_of(" \t\n\r") + 1);
+			word.erase(0, word.find_first_not_of(" \t\n\r\""));
+			word.erase(word.find_last_not_of(" \t\n\r\"") + 1);
 
 			vec.emplace_back(word);
 		}
@@ -51,7 +51,7 @@ int main()
 
 	try
 	{
-		auto data = readCSV("./files/employee.csv");
+		auto data = readCSV("./files/employee.csv", ',');
 		std::vector<Employee> employees{};
 
 		for (auto &&row : data)
@@ -83,7 +83,7 @@ int main()
 
 		// Read employees.csv
 
-		data = readCSV("./files/company.csv");
+		data = readCSV("./files/company.csv", ';');
 
 		std::vector<Company> companys{};
 

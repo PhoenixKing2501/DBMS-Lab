@@ -20,7 +20,7 @@ int main()
 
 		while (file.read(reinterpret_cast<char *>(&employee), sizeof(Employee)))
 		{
-			std::cout << std::format("{:3}\t{:3}\t{:20}\t{:20}\n",
+			std::cout << std::format("{:3}\t{:3}\t{:60}\t{:60}\n",
 									 employee.id,
 									 employee.company_id,
 									 employee.fname.data(),
@@ -42,7 +42,7 @@ int main()
 
 		while (file.read(reinterpret_cast<char *>(&company), sizeof(Company)))
 		{
-			std::cout << std::format("{:3}\t{:20}\t{:20}\n",
+			std::cout << std::format("{:3}\t{:62}\t{:62}\n",
 									 company.id,
 									 company.name.data(),
 									 company.slogan.data());
